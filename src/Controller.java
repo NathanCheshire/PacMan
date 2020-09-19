@@ -730,9 +730,31 @@ public class Controller {
         System.exit(0);
     }
 
-    private boolean isDead() {
-        //todo check neighbors of pac for enabled ghosts positions, if equal, return true
-        return false;
+    private boolean isDead() { //todo you wrote this at 2:42 s6o check it in the morning when you're awake
+
+        //if node left pac, is it a ghost? return true if so
+        if (pac.getExactX() - 1 >= 0 && ((pac.getExactX() - 1 == inky.getExactX() && pac.getExactY() == inky.getExactY())
+                                      || (pac.getExactX() - 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY())
+                                      || (pac.getExactX() - 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY())
+                                      || (pac.getExactX() - 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()) )) return true;
+
+        //if node right pac, is it a ghost? return true if so
+        if (pac.getExactX() + 1 < 40 && ((pac.getExactX() + 1 == inky.getExactX() && pac.getExactY() == inky.getExactY())
+                || (pac.getExactX() + 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY())
+                || (pac.getExactX() + 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY())
+                || (pac.getExactX() + 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()) )) return true;
+
+        //if node above pac, is it a ghost? return true if so
+        if (pac.getExactY() - 1 >= 0 && ((pac.getExactX() == inky.getExactX() && pac.getExactY() - 1 == inky.getExactY())
+                || (pac.getExactX() == blinky.getExactX() && pac.getExactY() - 1 == blinky.getExactY())
+                || (pac.getExactX() == pinky.getExactX() && pac.getExactY() - 1 == pinky.getExactY())
+                || (pac.getExactX() == clyde.getExactX() && pac.getExactY() - 1 == clyde.getExactY()) )) return true;
+
+        //if node below pac, is it a ghost? return true if so
+        return (pac.getExactY() + 1 < 40 && ((pac.getExactX() == inky.getExactX() && pac.getExactY() + 1 == inky.getExactY())
+                || (pac.getExactX() == blinky.getExactX() && pac.getExactY() + 1 == blinky.getExactY())
+                || (pac.getExactX() == pinky.getExactX() && pac.getExactY() + 1 == pinky.getExactY())
+                || (pac.getExactX() == clyde.getExactX() && pac.getExactY() + 1 == clyde.getExactY())));
     }
 
     private EventHandler<KeyEvent> pacMovement = new EventHandler<>() {

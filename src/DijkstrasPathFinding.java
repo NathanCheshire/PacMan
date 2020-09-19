@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class DijkstrasPathFinding extends PathFinder {
 
@@ -8,55 +7,45 @@ public class DijkstrasPathFinding extends PathFinder {
     private static Pac pac;
     private static Ghost controlGhost;
 
-    @Override
-    public void resfreshPath() {
-        System.out.println(controlGhost.getType() + " update position at: " + controlGhost.getExactX() + "," + controlGhost.getExactY());
-
-//        PriorityQueue<Node> pq = new PriorityQueue<>();
-//        pac.getPosition().setDistance(0);
-//        pq.add(pac.getPosition());
-//
-//        while (!pq.isEmpty()) {
-//            Node small = pq.poll();
-//
-//            if (small.getType() == Node.WALL)
-//                continue;
-//
-//            if (small.getNodeX() == pac.getNodeX() && small.getNodeY() == pac.getNodeY()) {
-//                pac.getPosition().setNodeParent(small.getNodeParent());
-//                break;
-//            }
-//
-//            small.setType(Node.HAS_CHECKED);
-//
-//            for (Node neighbor : getNeighbors(small)) {
-//                double distance = small.getDistance();
-//                double alt = small.getDistance() + (Math.sqrt(Math.pow((small.getNodeX() - neighbor.getNodeX()),2) +
-//                        Math.pow((small.getNodeY() - neighbor.getNodeY()),2)));
-//
-//                if (!pq.contains(neighbor)) {
-//                    neighbor.setDistance(alt);
-//                    neighbor.setNodeParent(small);
-//                    neighbor.setType(Node.TO_CHECK);
-//                    pq.add(neighbor);
-//                }
-//
-//                else if (alt < distance) {
-//                    neighbor.setDistance(alt);
-//                    neighbor.setNodeParent(small);
-//                }
-//            }
-//        }
-//
-//        Node current = pac.getPosition().getNodeParent();
-//
-//        while (current.getNodeX() != pac.getPosition().getNodeX() && current.getNodeY() != pac.getPosition().getNodeY()) {
-//            current.setType(Node.PATH);
-//            current = current.getNodeParent();
-//        }
+    private void stepUp() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
+        controlGhost.setExactY(controlGhost.getExactY() - 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
-    //modified dijkastras for start and goal node
+    private void stepDown() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateY(controlGhost.getTranslateY() + 10.0);
+        controlGhost.setExactY(controlGhost.getExactY() + 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
+    private void stepLeft() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateX(controlGhost.getTranslateX() - 10.0);
+        controlGhost.setExactX(controlGhost.getExactX() - 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
+    private void stepRight() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateX(controlGhost.getTranslateX() + 10.0);
+        controlGhost.setExactX(controlGhost.getExactX() + 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
+    @Override
+    public void resfreshPath(Node[][] graph) {
+        this.graph = graph;
+        System.out.println("Refreshing dijkastras path and stepping towards (" + pac.getExactX() + "," + pac.getExactY() + ")");
+
+        //path through null nodes until you get to pac if you can
+        //once you get to pac, use getParent to path all the way back to the ghost
+        //once at ghost figure out if the ghost's node's parent is up down left or right
+        //then call the corresponding step function
+    }
+
     DijkstrasPathFinding(Node[][] graph, Pac pac, Ghost ghost) {
         this.graph = graph;
         this.pac = pac;

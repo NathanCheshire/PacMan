@@ -18,6 +18,10 @@ public class Pac extends Node {
         return this.position;
     }
 
+    public int getType() {
+        return Node.PAC;
+    }
+
     public void setPosition(Node position) {
         this.position = position;
     }

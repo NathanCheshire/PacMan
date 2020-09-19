@@ -15,6 +15,13 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int TO_CHECK = 2;
     public static final int PATH = 3;
 
+    public static final int INKY = 4;
+    public static final int BLINKY = 5;
+    public static final int PINKY = 6;
+    public static final int CLYDE = 7;
+
+    public static final int PAC = 8;
+
     private static int type;
 
     //used by both

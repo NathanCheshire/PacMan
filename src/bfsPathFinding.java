@@ -7,50 +7,43 @@ public class bfsPathFinding extends PathFinder {
     private static Pac pac;
     private Ghost controlGhost;
 
+    private void stepUp() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
+        controlGhost.setExactY(controlGhost.getExactY() - 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
+    private void stepDown() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateY(controlGhost.getTranslateY() + 10.0);
+        controlGhost.setExactY(controlGhost.getExactY() + 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
+    private void stepLeft() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateX(controlGhost.getTranslateX() - 10.0);
+        controlGhost.setExactX(controlGhost.getExactX() - 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
+    private void stepRight() {
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        controlGhost.setTranslateX(controlGhost.getTranslateX() + 10.0);
+        controlGhost.setExactX(controlGhost.getExactX() + 1);
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+    }
+
     @Override
-    public void resfreshPath() {
+    public void resfreshPath(Node[][] graph) {
+        this.graph = graph;
+        System.out.println("Refreshing bfs path and stepping towards (" + pac.getExactX() + "," + pac.getExactY() + ")");
 
-        //todo make a step in any cardinal direction methods for each algorithm
-
-//        if (controlGhost.getExactY() + 1 < 40 && graph[controlGhost.getExactX()][controlGhost.getExactY() + 1] == null) {
-//            graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
-//            controlGhost.setTranslateY(controlGhost.getTranslateY() + 10.0);
-//            controlGhost.setExactY(controlGhost.getExactY() + 1);
-//            graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
-//        }
-
-//        Queue<Node> queue = new LinkedList<>();
-//        controlGhost.getPosition().setVisited(true);
-//        queue.add(controlGhost.getPosition());
-//
-//        while (!queue.isEmpty()) {
-//            Node v = queue.poll();
-//
-//            if (v.getType() == Node.WALL)
-//                continue;
-//
-//            if (v.getNodeX() == pac.getNodeX() && v.getNodeY() == pac.getNodeY()) {
-//                Node current = v;
-//                pac.getPosition().setNodeParent(v.getNodeParent());
-//                current = v.getNodeParent();
-//
-//                while (current.getNodeX() != pac.getPosition().getNodeX() && current.getNodeY() != pac.getPosition().getNodeY()) {
-//                    current.setType(Node.PATH);
-//                    current = current.getNodeParent();
-//                }
-//            }
-//
-//            v.setType(Node.HAS_CHECKED);
-//
-//            for(Node w: getNeighbors(v)) {
-//                if (!w.isVisited() && w.getType() != Node.WALL) {
-//                    w.setVisited(true);
-//                    w.setNodeParent(v);
-//                    w.setType(Node.TO_CHECK);
-//                    queue.add(w);
-//                }
-//            }
-//        }
+        //path through null nodes until you get to pac if you can
+        //once you get to pac, use getParent to path all the way back to the ghost
+        //once at ghost figure out if the ghost's node's parent is up down left or right
+        //then call the corresponding step function
     }
 
     public bfsPathFinding(Node[][] graph, Pac pac, Ghost controlGhost) {

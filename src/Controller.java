@@ -34,6 +34,10 @@ public class Controller {
     //ghosts start out updating every half second
     private long gameTimeout = 500000000;
 
+    //var used to decrease gameTimeout for hardmode
+    //todo make sure to reset gameTimeout and speedUpCounter on reset
+    private long speedUpCounter = 0;
+
     //checkbox booleans
     public boolean hardModeEnable;
     public boolean drawPathsEnable;
@@ -46,7 +50,7 @@ public class Controller {
     private static int size = 40;
 
     //our grid
-    private static Node[][] grid;
+    public static Node[][] grid;
 
     //player and ghosts
     private static Pac pac;
@@ -135,8 +139,6 @@ public class Controller {
 
         startMouseUpdates();
 
-        //todo: you can add and delete walls on top of ghosts and pac man again
-
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             try {
                 int xNode = (int) Math.round(xGame / 10.0);
@@ -153,7 +155,7 @@ public class Controller {
                     }
                 }
 
-                else if (!gameRunning){
+                else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode] != null && grid[xNode][yNode].getType() == Node.WALL) {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
@@ -185,7 +187,7 @@ public class Controller {
                     }
                 }
 
-                else if (!gameRunning){
+                else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode] != null && grid[xNode][yNode].getType() == Node.WALL) {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
@@ -254,7 +256,7 @@ public class Controller {
         }
 
         if (inkyEnable.isSelected() && inky == null) {
-            inky = new Ghost(0, 0,0);
+            inky = new Ghost(0, 0,Ghost.INKY);
 
             int inkyX = rn.nextInt(40);
             int inkyY = rn.nextInt(40);
@@ -288,7 +290,7 @@ public class Controller {
         }
 
         if (blinkyEnable.isSelected() && blinky == null) {
-            blinky = new Ghost(0, 0,1);
+            blinky = new Ghost(0, 0,Ghost.BLINKY);
 
             int blinkyX = rn.nextInt(40);
             int blinkyY = rn.nextInt(40);
@@ -322,7 +324,7 @@ public class Controller {
         }
 
         if (pinkyEnable.isSelected() && pinky == null) {
-            pinky = new Ghost(0, 0,2);
+            pinky = new Ghost(0, 0,Ghost.PINKY);
 
             int pinkyX = rn.nextInt(40);
             int pinkyY = rn.nextInt(40);
@@ -356,7 +358,7 @@ public class Controller {
         }
 
         if (clydeEnable.isSelected() && clyde == null) {
-            clyde = new Ghost(0, 0,3);
+            clyde = new Ghost(0, 0,Ghost.CLYDE);
 
             int clydeX = rn.nextInt(40);
             int clydelY = rn.nextInt(40);
@@ -407,17 +409,32 @@ public class Controller {
         }
     }
 
-    //todo determine if we can go in a straight or vertical line to pac, if we hit wall or ghost return false
     private boolean straightSight(int startX, int startY, int goalX, int goalY) {
-        System.out.println("line of sight triggering");
         if (startX == goalX) {
-            System.out.println("Vertical LOS");
+            int miny = Math.min(startY, goalY) + 1;
+            int maxy = Math.max(startY, goalY);
+
+            while (miny != maxy) {
+                if (grid[startX][miny] != null)
+                    return false;
+                miny++;
+            }
+
             return true;
         }
 
         else if (startY == goalY) {
-           System.out.println("Horizontal LOS");
-           return true;
+            int minx = Math.min(startX, goalX) + 1;
+            int maxx = Math.max(startX, goalX);
+
+            while (minx != maxx) {
+                if (grid[minx][startY] != null)
+                    return false;
+
+                minx++;
+            }
+
+            return true;
         }
 
         return false;
@@ -428,7 +445,7 @@ public class Controller {
 
         if (hardModeEnable) {
             if (inky != null) {
-                if (nsecondsInkySeen / 10.0  == 500000000) //divide by ten so that comparison should be correct, check this
+                if (nsecondsInkySeen / 10.0  == 500000000)
                     endGame();
 
                 if (straightSight(inky.getExactX(), inky.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -439,7 +456,7 @@ public class Controller {
             }
 
             if (blinky != null) {
-                if (nsecondsBlinkySeen / 10.0  == 500000000)  //divide by ten so that comparison should be correct, check this
+                if (nsecondsBlinkySeen / 10.0  == 500000000)
                     endGame();
 
                 if (straightSight(blinky.getExactX(), blinky.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -450,7 +467,7 @@ public class Controller {
             }
 
             if (pinky != null) {
-                if (nsecondsPinkySeen / 10.0  == 500000000)  //divide by ten so that comparison should be correct, check this
+                if (nsecondsPinkySeen / 10.0  == 500000000)
                     endGame();
 
                 if (straightSight(pinky.getExactX(), pinky.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -461,7 +478,7 @@ public class Controller {
             }
 
             if (clyde != null) {
-                if (nsecondsClydeSeen / 10.0  == 500000000)  //divide by ten so that comparison should be correct, check this
+                if (nsecondsClydeSeen / 10.0  == 500000000)
                     endGame();
 
                 if (straightSight(clyde.getExactX(), clyde.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -470,21 +487,26 @@ public class Controller {
                 else
                     nsecondsClydeSeen = 0;
             }
+            speedUpCounter += (gameTimeout / 1000000.0);
 
-            //todo if it's been ten seconds, decrease update time for ghosts pathfinding by 100ms
+            if (speedUpCounter >= 10000) {
+                if (gameTimeout > 100000000)
+                    gameTimeout -= 50000000;
+                speedUpCounter = 0;
+            }
         }
 
         if (inkyEnable.isSelected())
-            inky.step();
+            inky.step(grid);
 
         if (blinkyEnable.isSelected())
-            blinky.step();
+            blinky.step(grid);
 
         if (pinkyEnable.isSelected())
-            pinky.step();
+            pinky.step(grid);
 
         if (clydeEnable.isSelected())
-            clyde.step();
+            clyde.step(grid);
 
         if (isDead())
             endGame();
@@ -611,6 +633,10 @@ public class Controller {
             blinkyChoice.setDisable(false);
             pinkyChoice.setDisable(false);
             clydeChoice.setDisable(false);
+
+            drawWallsButton.setDisable(false);
+            showPathsCheck.setDisable(false);
+            hardModeCheck.setDisable(false);
         }
 
         else {
@@ -636,6 +662,10 @@ public class Controller {
             blinkyChoice.setDisable(true);
             pinkyChoice.setDisable(true);
             clydeChoice.setDisable(true);
+            
+            drawWallsButton.setDisable(true);
+            showPathsCheck.setDisable(true);
+            hardModeCheck.setDisable(true);
         }
     }
 
@@ -655,11 +685,18 @@ public class Controller {
         drawWallsButton.setDisable(true);
         hardModeCheck.setDisable(true);
         showPathsCheck.setDisable(true);
+
+        startButton.setDisable(true);
+
+        Main.primaryStage.removeEventFilter(KeyEvent.KEY_PRESSED, pacMovement);
+
+        tim.stop();
     }
 
     @FXML
     private void resetGame(ActionEvent e) {
         System.out.println("Reset Game");
+        startButton.setDisable(false);
 
         if (gameRunning) {
             startButton.setText("Start Game");
@@ -720,6 +757,12 @@ public class Controller {
         blinkyEnable.setSelected(false);
         pinkyEnable.setSelected(false);
         clydeEnable.setSelected(false);
+
+        hardModeCheck.setSelected(false);
+        showPathsCheck.setSelected(false);
+
+        gameTimeout = 500000000;
+        speedUpCounter = 0;
     }
 
     @FXML

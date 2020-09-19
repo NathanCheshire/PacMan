@@ -11,10 +11,6 @@ public class Ghost extends Node {
 
     //ghost types and our type
     private int type;
-    public static final int INKY = 0;
-    public static final int BLINKY = 1;
-    public static final int PINKY = 2;
-    public static final int CLYDE = 3;
 
     //ghost pictures
     public static final ImagePattern inkyImage = new ImagePattern(new Image("Inky.png"));
@@ -24,32 +20,39 @@ public class Ghost extends Node {
 
     private int x;
     private int y;
-
-    //local graph that includes walls because each algorithm/ghost will have different search paths
+    
     private PathFinder pathFinder;
 
     Ghost(int x, int y, int type) {
         super((x) * 10,(y) * 10);
+        
         this.type = type;
+        super.setType(type);
+        
         this.position = new Node(x,y);
+        
         this.x = x;
         this.y = y;
 
         //init image
         switch(type) {
-            case 0:
+            case Ghost.INKY:
                 this.setFill(inkyImage);
                 break;
-            case 1:
+            case Ghost.BLINKY:
                 this.setFill(blinkyImage);
                 break;
-            case 2:
+            case Ghost.PINKY:
                 this.setFill(pinkyImage);
                 break;
-            case 3:
+            case Ghost.CLYDE:
                 this.setFill(clydeImage);
                 break;
         }
+    }
+
+    public int getType() {
+        return this.type;
     }
 
     public void setPathFinder(PathFinder pf) {
@@ -63,8 +66,8 @@ public class Ghost extends Node {
         return this.position;
     }
 
-    public void step() {
-        pathFinder.resfreshPath();
+    public void step(Node[][] refreshedGraph) {
+        pathFinder.resfreshPath(refreshedGraph);
     }
 
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

@@ -2,5 +2,5 @@ public abstract class PathFinder {
     private Node start;
     private Node goal;
 
-    public void resfreshPath() {}
+    public void resfreshPath(Node[][] graph) {}
 }

@@ -133,8 +133,9 @@ public class Controller {
         clydeChoice.getItems().addAll(algorithmsList);
         clydeChoice.getSelectionModel().select(0);
 
-        //start updating the mouse position vars, used to draw walls
         startMouseUpdates();
+
+        //todo: you can add and delete walls on top of ghosts and pac man again
 
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             try {
@@ -406,10 +407,11 @@ public class Controller {
         }
     }
 
+    //todo determine if we can go in a straight or vertical line to pac, if we hit wall or ghost return false
     private boolean straightSight(int startX, int startY, int goalX, int goalY) {
-        System.out.println("here");
+        System.out.println("line of sight triggering");
         if (startX == goalX) {
-            System.out.println("Vertical LOS"); //todo determine if we can go in a straight or vertical line to pac, if we hit wall or ghost return false
+            System.out.println("Vertical LOS");
             return true;
         }
 
@@ -421,89 +423,71 @@ public class Controller {
         return false;
     }
 
-    //todo: you can draw and delete walls on top of ghosts and pac man again
-
     private void update() {
         updateGameDrawRoot();
+
         if (hardModeEnable) {
             if (inky != null) {
-                if (nsecondsInkySeen / 10.0  == 500000000) { //divide by ten so that comparison should be correct, check this
+                if (nsecondsInkySeen / 10.0  == 500000000) //divide by ten so that comparison should be correct, check this
                     endGame();
-                }
 
-                if (straightSight(inky.getExactX(), inky.getExactY(), pac.getExactX(), pac.getExactY())) {
+                if (straightSight(inky.getExactX(), inky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsInkySeen += gameTimeout;
-                }
 
-                else {
+                else
                     nsecondsInkySeen = 0;
-                }
             }
 
             if (blinky != null) {
-                if (nsecondsBlinkySeen / 10.0  == 500000000) { //divide by ten so that comparison should be correct, check this
+                if (nsecondsBlinkySeen / 10.0  == 500000000)  //divide by ten so that comparison should be correct, check this
                     endGame();
-                }
 
-                if (straightSight(blinky.getExactX(), blinky.getExactY(), pac.getExactX(), pac.getExactY())) {
+                if (straightSight(blinky.getExactX(), blinky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsBlinkySeen += gameTimeout;
-                }
 
-                else {
+                else
                     nsecondsBlinkySeen = 0;
-                }
             }
 
             if (pinky != null) {
-                if (nsecondsPinkySeen / 10.0  == 500000000) { //divide by ten so that comparison should be correct, check this
+                if (nsecondsPinkySeen / 10.0  == 500000000)  //divide by ten so that comparison should be correct, check this
                     endGame();
-                }
 
-                if (straightSight(pinky.getExactX(), pinky.getExactY(), pac.getExactX(), pac.getExactY())) {
+                if (straightSight(pinky.getExactX(), pinky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsPinkySeen += gameTimeout;
-                }
 
-                else {
+                else
                     nsecondsPinkySeen = 0;
-                }
             }
 
             if (clyde != null) {
-                if (nsecondsClydeSeen / 10.0  == 500000000) { //divide by ten so that comparison should be correct, check this
+                if (nsecondsClydeSeen / 10.0  == 500000000)  //divide by ten so that comparison should be correct, check this
                     endGame();
-                }
 
-                if (straightSight(clyde.getExactX(), clyde.getExactY(), pac.getExactX(), pac.getExactY())) {
+                if (straightSight(clyde.getExactX(), clyde.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsClydeSeen += gameTimeout;
-                }
 
-                else {
+                else
                     nsecondsClydeSeen = 0;
-                }
             }
 
             //todo if it's been ten seconds, decrease update time for ghosts pathfinding by 100ms
         }
 
-        if (inkyEnable.isSelected()) {
+        if (inkyEnable.isSelected())
             inky.step();
-        }
 
-        if (blinkyEnable.isSelected()) {
+        if (blinkyEnable.isSelected())
             blinky.step();
-        }
 
-        if (pinkyEnable.isSelected()) {
+        if (pinkyEnable.isSelected())
             pinky.step();
-        }
 
-        if (clydeEnable.isSelected()) {
+        if (clydeEnable.isSelected())
             clyde.step();
-        }
 
-        if (isDead()) {
+        if (isDead())
             endGame();
-        }
     }
 
     public Node[] get1DGrid() {
@@ -656,7 +640,21 @@ public class Controller {
     }
 
     private void endGame() {
-        //todo tell user they lost, disable start/stop button so that they must press reset button
+        System.out.println("You were killed by a ghost\nPress reset to play again");
+        
+        inkyEnable.setDisable(true);
+        blinkyEnable.setDisable(true);
+        pinkyEnable.setDisable(true);
+        clydeEnable.setDisable(true);
+
+        inkyChoice.setDisable(true);
+        blinkyChoice.setDisable(true);
+        pinkyChoice.setDisable(true);
+        clydeChoice.setDisable(true);
+        
+        drawWallsButton.setDisable(true);
+        hardModeCheck.setDisable(true);
+        showPathsCheck.setDisable(true);
     }
 
     @FXML
@@ -682,6 +680,10 @@ public class Controller {
             blinkyChoice.setDisable(false);
             pinkyChoice.setDisable(false);
             clydeChoice.setDisable(false);
+
+            drawWallsButton.setDisable(false);
+            hardModeCheck.setDisable(false);
+            showPathsCheck.setDisable(false);
         }
 
         gameDrawRoot.getChildren().clear();
@@ -730,38 +732,73 @@ public class Controller {
         System.exit(0);
     }
 
-    private boolean isDead() { //todo you wrote this at 2:42 s6o check it in the morning when you're awake
+    private boolean isDead() {
+        if (inky != null) {
+            //left
+            if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == inky.getExactX() && pac.getExactY() == inky.getExactY()))
+                return true;
+            //right
+            if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == inky.getExactX() && pac.getExactY() == inky.getExactY()))
+                return true;
+            //up
+            if (pac.getExactY() + 1 < 40 && (pac.getExactX() == inky.getExactX() && pac.getExactY() + 1 == inky.getExactY()))
+                return true;
+            //down
+            if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == inky.getExactX() && pac.getExactY() - 1 == inky.getExactY()))
+                return true;
+        }
 
-        //if node left pac, is it a ghost? return true if so
-        if (pac.getExactX() - 1 >= 0 && ((pac.getExactX() - 1 == inky.getExactX() && pac.getExactY() == inky.getExactY())
-                                      || (pac.getExactX() - 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY())
-                                      || (pac.getExactX() - 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY())
-                                      || (pac.getExactX() - 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()) )) return true;
+        if (blinky != null) {
+            //left
+            if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY()))
+                return true;
+            //right
+            if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY()))
+                return true;
+            //up
+            if (pac.getExactY() + 1 < 40 && (pac.getExactX() == blinky.getExactX() && pac.getExactY() + 1 == blinky.getExactY()))
+                return true;
+            //down
+            if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == blinky.getExactX() && pac.getExactY() - 1 == blinky.getExactY()))
+                return true;
+        }
 
-        //if node right pac, is it a ghost? return true if so
-        if (pac.getExactX() + 1 < 40 && ((pac.getExactX() + 1 == inky.getExactX() && pac.getExactY() == inky.getExactY())
-                || (pac.getExactX() + 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY())
-                || (pac.getExactX() + 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY())
-                || (pac.getExactX() + 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()) )) return true;
+        if (pinky != null) {
+            //left
+            if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY()))
+                return true;
+            //right
+            if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY()))
+                return true;
+            //up
+            if (pac.getExactY() + 1 < 40 && (pac.getExactX() == pinky.getExactX() && pac.getExactY() + 1 == pinky.getExactY()))
+                return true;
+            //down
+            if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == pinky.getExactX() && pac.getExactY() - 1 == pinky.getExactY()))
+                return true;
+        }
 
-        //if node above pac, is it a ghost? return true if so
-        if (pac.getExactY() - 1 >= 0 && ((pac.getExactX() == inky.getExactX() && pac.getExactY() - 1 == inky.getExactY())
-                || (pac.getExactX() == blinky.getExactX() && pac.getExactY() - 1 == blinky.getExactY())
-                || (pac.getExactX() == pinky.getExactX() && pac.getExactY() - 1 == pinky.getExactY())
-                || (pac.getExactX() == clyde.getExactX() && pac.getExactY() - 1 == clyde.getExactY()) )) return true;
+        if (clyde != null) {
+            //left
+            if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()))
+                return true;
+            //right
+            if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()))
+                return true;
+            //up
+            if (pac.getExactY() + 1 < 40 && (pac.getExactX() == clyde.getExactX() && pac.getExactY() + 1 == clyde.getExactY()))
+                return true;
+            //down
+            return pac.getExactY() - 1 >= 0 && (pac.getExactX() == clyde.getExactX() && pac.getExactY() - 1 == clyde.getExactY());
+        }
 
-        //if node below pac, is it a ghost? return true if so
-        return (pac.getExactY() + 1 < 40 && ((pac.getExactX() == inky.getExactX() && pac.getExactY() + 1 == inky.getExactY())
-                || (pac.getExactX() == blinky.getExactX() && pac.getExactY() + 1 == blinky.getExactY())
-                || (pac.getExactX() == pinky.getExactX() && pac.getExactY() + 1 == pinky.getExactY())
-                || (pac.getExactX() == clyde.getExactX() && pac.getExactY() + 1 == clyde.getExactY())));
+        return false;
     }
 
     private EventHandler<KeyEvent> pacMovement = new EventHandler<>() {
         @Override
         public void handle(KeyEvent keyEvent) {
             if (gameRunning) {
-                System.out.println("here");
                 switch (keyEvent.getCode()) {
                     case A:
                         if (pac.getExactX() - 1 >= 0 && grid[pac.getExactX() - 1][pac.getExactY()] == null) {

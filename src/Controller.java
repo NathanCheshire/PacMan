@@ -80,28 +80,6 @@ public class Controller {
         return this.yGame;
     }
 
-    //get a node at x,y
-    public Node getNode(int x, int y) {
-        return grid[x][y];
-    }
-
-    //get neighbors of a node provided they are valid
-    public java.util.List<Node> getNeighbors(Node node) {
-        List<Node> ret = new ArrayList<>();
-
-        for (int x = -1 + node.getNodeX(); x <= 1 + node.getNodeY() ; x++) {
-            for (int y = -1 + node.getNodeY(); y <= 1 + node.getNodeY() ; y++) {
-                if (x == 0 && y == 0)
-                    continue;
-                if (x > 0 && y > 0 && x < size && y < size)
-                    ret.add(grid[x][y]);
-
-            }
-        }
-
-        return ret;
-    }
-
     @FXML
     private HBox dragLabel;
 
@@ -207,8 +185,8 @@ public class Controller {
 
         //init grid
         grid = new Node[40][40];
-        for (int i = 0 ; i < grid.length ; i++) {
-            for (int j = 0 ; j < grid[0].length ; j++) {
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
                 grid[i][j] = null;
             }
         }

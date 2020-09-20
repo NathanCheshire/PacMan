@@ -28,8 +28,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     //used by both
     private static Node parent;
-    private static int x;
-    private static int y;
 
     //used by dijkastras
     private static double distance;
@@ -43,12 +41,7 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);
-
-        this.x = x;
-        this.y = y;
-
-        this.setType(Node.PATHABLE);
-
+        this.setType(Node.PATHABLE); //pathable by default
         this.setFill(javafx.scene.paint.Color.rgb(color.getRed(),color.getGreen(),color.getBlue()));
     }
 
@@ -60,17 +53,17 @@ public class Node extends javafx.scene.shape.Rectangle {
     }
 
     public int getNodeX() {
-        return this.x;
+        return (int) (this.getTranslateX() / 10.0);
     }
     public void setNodeX(int x) {
-        this.x = x;
+        this.setTranslateX(x * 10);
     }
 
     public int getNodeY() {
-        return this.y;
+        return (int) (this.getTranslateY() / 10.0);
     }
     public void setNodeY(int y) {
-        this.y = y;
+        this.setTranslateY(y * 10);
     }
 
     public Node getNodeParent() {

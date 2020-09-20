@@ -15,6 +15,8 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int TO_CHECK = 2;
     public static final int PATH = 3;
 
+    public static final int PATHABLE = 20;
+
     public static final int INKY = 4;
     public static final int BLINKY = 5;
     public static final int PINKY = 6;
@@ -45,7 +47,7 @@ public class Node extends javafx.scene.shape.Rectangle {
         this.x = x;
         this.y = y;
 
-        this.setType(Node.WALL);
+        this.setType(Node.PATHABLE);
 
         this.setFill(javafx.scene.paint.Color.rgb(color.getRed(),color.getGreen(),color.getBlue()));
     }

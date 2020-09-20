@@ -139,6 +139,8 @@ public class Controller {
 
         startMouseUpdates();
 
+        //todo start/stop change of algorithms doesn't work
+
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             try {
                 int xNode = (int) Math.round(xGame / 10.0);
@@ -510,18 +512,6 @@ public class Controller {
 
         if (isDead())
             endGame();
-    }
-
-    public Node[] get1DGrid() {
-        Node[] ret = new Node[this.size * this.size];
-
-        for (int i = 0 ; i < this.grid.length ; i++) {
-            for (int j = 0 ; j < this.grid[0].length ; j++) {
-                ret[i * j] = this.grid[i][j];
-            }
-        }
-
-        return ret;
     }
 
     private void startMouseUpdates() {

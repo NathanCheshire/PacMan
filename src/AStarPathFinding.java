@@ -7,8 +7,6 @@ public class AStarPathFinding extends PathFinder {
 
     //graph is used for moving but we path find which one we should move to using a copy of it
     private static Node[][] graph;
-    private Node[][] localGraph;
-
     private static Pac pac;
     private Ghost controlGhost;
 
@@ -40,21 +38,46 @@ public class AStarPathFinding extends PathFinder {
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
-    class nodeComparator implements Comparator<Node>{
+//    class NodePriorityQueue extends PriorityQueue {
+//        public boolean contains(Node node) {
+//            System.out.println("inside of contains");
+//            Iterator<Node> iterator = this.iterator();
+//
+//            while (iterator.hasNext()) {
+//                Node testNode = iterator.next();
+//
+//                if (testNode.getNodeX() == node.getNodeX() && testNode.getNodeY() == node.getNodeY())
+//                    return true;
+//            }
+//
+//            return false;
+//        }
+//    }
+
+    public class NodePriorityQueue extends PriorityQueue<Node> {
         @Override
-        public int compare(Node n1, Node n2) {
-            if (n1.getGCost() > n2.getGCost())
-                return 1;
-            else if (n1.getGCost() < n2.getGCost())
-                return -1;
-            return 0;
+        public boolean contains(Object obj) {
+            if (!(obj instanceof Node)) {
+                return false;
+            }
+
+            Node node = (Node) obj;
+
+            System.out.println("inside of contains");
+
+            for (Node testNode : this) {
+                if (testNode.getNodeX() == node.getNodeX() && testNode.getNodeY() == node.getNodeY())
+                    return true;
+            }
+
+            return false;
         }
     }
 
     @Override
     public void resfreshPath(Node[][] graph) {
         try {
-            PriorityQueue<Node> pq = new PriorityQueue<>(new nodeComparator());
+            NodePriorityQueue pq = new NodePriorityQueue();
 
             int ghostX = controlGhost.getExactX();
             int ghostY = controlGhost.getExactY();
@@ -69,6 +92,7 @@ public class AStarPathFinding extends PathFinder {
             startNode.setNodeParent(null);
             pq.add(startNode);
 
+
             //while priority queue is not empty
             while (!pq.isEmpty()) {
                 Node minNode = pq.poll();
@@ -78,24 +102,36 @@ public class AStarPathFinding extends PathFinder {
                     System.out.println("Path found");
                 }
 
+                for (int x = minNode.getNodeX() - 1 ; x < minNode.getNodeX() + 2; x++) {
+                    for (int y = minNode.getNodeY() - 1 ; y < minNode.getNodeY() + 2 ; y++) {
+                        if (x == minNode.getNodeX() && minNode.getNodeY() == y)
+                            continue;
 
-                for (Node neighbor : getNeighbors(minNode)) {
-                    System.out.println(neighbor.getNodeX() + "," + neighbor.getNodeY());
-                    if (!pq.contains(neighbor)) {
-//                    double g = minNode.getGCost() + Math.sqrt(Math.pow((neighbor.getNodeX() - minNode.getNodeX()), 2) +
-//                                                    Math.pow((neighbor.getNodeY() - minNode.getNodeY()), 2));
-//                    neighbor.setgCost(g);
-//                    neighbor.setNodeParent(minNode);
-                      pq.add(neighbor);
-                    }
+                        if (x > 0 && y > 0 && x < 40 && y < 40) {
+                            //is a neighbor here
+                            if (!pq.contains(graph[x][y])) {
 
-//                else if (minNode.getGCost() + Math.sqrt(Math.pow((neighbor.getNodeX() - minNode.getNodeX()), 2) +
-//                                                        Math.pow((neighbor.getNodeY() - minNode.getNodeY()), 2)) < neighbor.getGCost()) {
+//                                double g = minNode.getGCost() + Math.sqrt(Math.pow((graph[x][y].getNodeX() - minNode.getNodeX()), 2) +
+//                                                   Math.pow((graph[x][y].getNodeY() - minNode.getNodeY()), 2));
+//                                graph[x][y].setgCost(g);
+//                                graph[x][y].setNodeParent(minNode);
 //
-//                    neighbor.setgCost(minNode.getGCost() + Math.sqrt(Math.pow((neighbor.getNodeX() - minNode.getNodeX()), 2) +
-//                                                           Math.pow((neighbor.getNodeY() - minNode.getNodeY()), 2)));
-//                    neighbor.setNodeParent(minNode);
-//                }
+                                graph[x][y] = new Node(x,y);
+                                graph[x][y].setNodeX(x);
+                                graph[x][y].setNodeY(y);
+                                System.out.println("adding: " + graph[x][y]);
+                                pq.add(graph[x][y]);
+                            }
+
+//                            else if (minNode.getGCost() + Math.sqrt(Math.pow((graph[x][y].getNodeX() - minNode.getNodeX()), 2) +
+//                                    Math.pow((graph[x][y].getNodeY() - minNode.getNodeY()), 2)) < graph[x][y].getGCost()) {
+//
+//                                graph[x][y].setgCost(minNode.getGCost() + Math.sqrt(Math.pow((graph[x][y].getNodeX() - minNode.getNodeX()), 2) +
+//                                        Math.pow((graph[x][y].getNodeY() - minNode.getNodeY()), 2)));
+//                                graph[x][y].setNodeParent(minNode);
+//                            }
+                        }
+                    }
                 }
             }
 
@@ -114,26 +150,4 @@ public class AStarPathFinding extends PathFinder {
     }
 
     //todo redo getNeighbors in other algorithms
-
-    //todo make sure this returns the whole 8 if it can
-    public List<Node> getNeighbors(Node node) {
-        List<Node> ret = new ArrayList<>();
-
-        for (int x = node.getNodeX() - 1 ; x < node.getNodeX() + 2; x++) {
-            for (int y = node.getNodeY() - 1 ; y < node.getNodeY() + 2 ; y++) {
-                if (x == node.getNodeX() && node.getNodeY() == y)
-                    continue;
-
-                if (x > 0 && y > 0 && x < 40 && y < 40) {
-                    graph[x][y] = new Node(x,y);
-                    graph[x][y].setNodeX(x);
-                    graph[x][y].setNodeY(y);
-                    System.out.println("Neighbor found: " + graph[x][y].getNodeX() + "," + graph[x][y].getNodeY());
-                    ret.add(graph[x][y]);
-                }
-            }
-        }
-
-        return ret;
-    }
 }

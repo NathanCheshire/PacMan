@@ -2,7 +2,6 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 
 public class Ghost extends Node {
-
     //ghosts postiion
     private static Node position;
 
@@ -28,7 +27,7 @@ public class Ghost extends Node {
         
         this.type = type;
         super.setType(type);
-        
+
         this.position = new Node(x,y);
         
         this.x = x;

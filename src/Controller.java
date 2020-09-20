@@ -106,13 +106,15 @@ public class Controller {
         algorithms.add("A*");
         algorithmsList.addAll(algorithms);
         inkyChoice.getItems().addAll(algorithmsList);
-        inkyChoice.getSelectionModel().select(0);
+        inkyChoice.getSelectionModel().select(2);
         blinkyChoice.getItems().addAll(algorithmsList);
-        blinkyChoice.getSelectionModel().select(0);
+        blinkyChoice.getSelectionModel().select(2);
         pinkyChoice.getItems().addAll(algorithmsList);
-        pinkyChoice.getSelectionModel().select(0);
+        pinkyChoice.getSelectionModel().select(2);
         clydeChoice.getItems().addAll(algorithmsList);
-        clydeChoice.getSelectionModel().select(0);
+        clydeChoice.getSelectionModel().select(2);
+
+        inkyEnable.setSelected(true);
 
         startMouseUpdates();
 
@@ -715,12 +717,12 @@ public class Controller {
             }
         }
 
-        inkyChoice.setValue("BFS");
-        blinkyChoice.setValue("BFS");
-        pinkyChoice.setValue("BFS");
-        clydeChoice.setValue("BFS");
+        inkyChoice.setValue("A*");
+        blinkyChoice.setValue("A");
+        pinkyChoice.setValue("A");
+        clydeChoice.setValue("A");
 
-        inkyEnable.setSelected(false);
+        inkyEnable.setSelected(true);
         blinkyEnable.setSelected(false);
         pinkyEnable.setSelected(false);
         clydeEnable.setSelected(false);

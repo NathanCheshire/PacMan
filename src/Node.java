@@ -37,7 +37,7 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     //used by A*
     private static double hCost;
-    private static double gCost;
+    private static double gCost = Integer.MAX_VALUE;
 
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);

@@ -86,7 +86,27 @@ public class Ghost extends Node {
         return this.x;
     }
 
+    public String getNameType() {
+        switch(type) {
+            case Ghost.INKY:
+                return "inky";
+            case Ghost.BLINKY:
+                return "blinky";
+            case Ghost.PINKY:
+                return "pinky";
+            case Ghost.CLYDE:
+                return "clyde";
+        }
+
+        return  null;
+    }
+
     public int getExactY() {
         return this.y;
+    }
+
+    @Override
+    public String toString() {
+        return "Ghost type: " + type + super.toString();
     }
 }

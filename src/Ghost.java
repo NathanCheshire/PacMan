@@ -14,6 +14,7 @@ public class Ghost extends Node {
 
     public static final Color pathColor = javafx.scene.paint.Color.rgb(204,153,0,0.8);
     public static final Color pathableColor = javafx.scene.paint.Color.rgb(0,0,0,0);
+    public static final Color nextMove = javafx.scene.paint.Color.rgb(70,60,200,0.7);
 
     //ghost pictures
     public static final ImagePattern inkyImage = new ImagePattern(new Image("Inky.png"));

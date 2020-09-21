@@ -20,28 +20,44 @@ public class AStarPathFinding extends PathFinder {
     }
 
     private void stepUp() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() - 1);
+        newNode.setNodeX(controlGhost.getExactX());
+        newNode.setNodeY(controlGhost.getExactY() - 1);
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
         controlGhost.setExactY(controlGhost.getExactY() - 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
     private void stepDown() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() + 1);
+        newNode.setNodeX(controlGhost.getExactX());
+        newNode.setNodeY(controlGhost.getExactY() + 1);
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateY(controlGhost.getTranslateY() + 10.0);
         controlGhost.setExactY(controlGhost.getExactY() + 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
     private void stepLeft() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX() - 1, controlGhost.getExactY());
+        newNode.setNodeX(controlGhost.getExactX() - 1);
+        newNode.setNodeY(controlGhost.getExactY());
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateX(controlGhost.getTranslateX() - 10.0);
         controlGhost.setExactX(controlGhost.getExactX() - 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
     private void stepRight() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX() + 1, controlGhost.getExactY());
+        newNode.setNodeX(controlGhost.getExactX() + 1);
+        newNode.setNodeY(controlGhost.getExactY());
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateX(controlGhost.getTranslateX() + 10.0);
         controlGhost.setExactX(controlGhost.getExactX() + 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
@@ -84,10 +100,57 @@ public class AStarPathFinding extends PathFinder {
                     pathfindingGraph[goalX][goalY].setNodeParent(min);
                     System.out.println(min);
 
-                    //todo backtrack and figure out step that needs to be made DO THIS FIRST
+                    //we're setting parents in pathfindingGrip[][] so go through that
 
-                    //todo this is the capture position
-                    System.out.println("Should move ghost to : " + pathfindingGraph[goalX][goalY].getNodeParent());
+                    //so now we start at min coordinates which is next to pac and work our way back to the ghost
+
+                    int x = pathfindingGraph[goalX][goalY].getNodeParent().getNodeX();
+                    int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
+
+                    while (!nextTo(x,y,startX,startY)) {
+                        Controller.gameDrawRoot.getChildren().remove(graph[x][y]);
+                        graph[x][y].setFill(Ghost.pathColor);
+                        Controller.gameDrawRoot.getChildren().add(graph[x][y]);
+
+                        int copyX = x;
+                        int copyY = y;
+
+                        x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
+                        y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
+                    }
+
+                    if (startX == x && startY < y) {
+                        Controller.gameDrawRoot.getChildren().remove(graph[x][y - 1]);
+                        graph[x][y - 1].setFill(Ghost.pathColor);
+                        Controller.gameDrawRoot.getChildren().remove(graph[x][y - 1]);
+
+                        stepUp();
+                    }
+
+                    else if (startX == x && startY > y) {
+                        Controller.gameDrawRoot.getChildren().remove(graph[x][y + 1]);
+                        graph[x][y + 1].setFill(Ghost.pathColor);
+                        Controller.gameDrawRoot.getChildren().remove(graph[x][y  + 1]);
+
+                        stepDown();
+                    }
+
+                    else if (startY == y && startX > x) {
+                        Controller.gameDrawRoot.getChildren().remove(graph[x - 1][y]);
+                        System.out.println(x - 1 + "," + y);
+                        graph[x - 1][y].setFill(Ghost.pathColor);
+                        Controller.gameDrawRoot.getChildren().remove(graph[x - 1][y]);
+
+                        stepLeft();
+                    }
+
+                    else if (startY == y && startX < x) {
+                        Controller.gameDrawRoot.getChildren().remove(graph[x + 1][y]);
+                        graph[x + 1][y].setFill(Ghost.pathColor);
+                        Controller.gameDrawRoot.getChildren().remove(graph[x + 1][y]);
+
+                        stepRight();
+                    }
 
                     return;
                 }
@@ -121,6 +184,7 @@ public class AStarPathFinding extends PathFinder {
                             else if (min.getGCost() + dist(min, pathfindingGraph[i][j]) < pathfindingGraph[i][j].getGCost()) {
                                 pathfindingGraph[i][j].setgCost(min.getGCost() + dist(min, pathfindingGraph[i][j]));
                                 pathfindingGraph[i][j].setNodeParent(min);
+                                open.add(pathfindingGraph[i][j]);
                             }
                         }
                     }
@@ -187,9 +251,9 @@ public class AStarPathFinding extends PathFinder {
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
-            if (node1.getFCost() > node2.getFCost())
+            if (node1.getGCost() > node2.getGCost())
                 return 1;
-            else if (node1.getFCost() < node2.getFCost())
+            else if (node1.getGCost() < node2.getGCost())
                 return -1;
             else
                 return 0;
@@ -202,6 +266,11 @@ public class AStarPathFinding extends PathFinder {
     }
 
     private boolean nextTo(int x1, int y1, int x2, int y2) {
-        return (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1);
+        if (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 0)
+            return true;
+        if (Math.abs(x1-x2) == 0 && Math.abs(y1-y2) == 1)
+            return true;
+
+        return false;
     }
 }

@@ -1,3 +1,5 @@
+import javafx.scene.paint.Color;
+
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -46,11 +48,11 @@ public class AStarPathFinding extends PathFinder {
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
-    //todo idea: use an integer combo (x,y) and use priority queue in that way instead of using a priority queue on nodes?
-
     @Override
     public void resfreshPath(Node[][] graph) {
         try {
+            this.graph = graph;
+
             //todo path find from (ghostX, ghostY) to (pacX, pacY). If possible, take a step in the best direction
             int startX = controlGhost.getExactX();
             int startY = controlGhost.getExactY();
@@ -63,6 +65,9 @@ public class AStarPathFinding extends PathFinder {
             for (int row = 0 ; row < 40 ; row++)
                 for (int col = 0 ; col < 40 ; col++)
                     if (graph[col][row] == null) {
+//                        if (graph[col][row].getType() == Node.PATH)
+//                            graph[col][row].setType(Node.PATHABLE);
+
                         localSearchGraph[row][col] = new Node(row,col);
                         localSearchGraph[row][col].setNodeX(row);
                         localSearchGraph[row][col].setNodeY(col);
@@ -71,18 +76,6 @@ public class AStarPathFinding extends PathFinder {
 
             localSearchGraph[startX][startY] = new Node(startX, startY);
 
-            //-------------------------printing the array-------------------------
-            for (int row = 0 ; row < 40 ; row++) {
-                for (int col = 0 ; col < 40 ; col++)
-                    System.out.print(localSearchGraph[row][col] != null ? "- " : "* ");
-
-                System.out.println();
-            }
-            //--------------------------------------------------------------------
-
-            //localGraph[x][y] == null means skip it since we can't path it, don't add it to the queue either
-
-            //when creating a new node the startx and starty are not copied over
             Node start =  localSearchGraph[startX][startY];
             start.setNodeX(startX);
             start.setNodeY(startY);
@@ -90,13 +83,10 @@ public class AStarPathFinding extends PathFinder {
             start.setNodeParent(null);
 
             PriorityQueue<Node> openpq = new PriorityQueue<>(new NodeComparator());
-
-            //we have visited these nodes so they shouldn't be added to open pq again
             PriorityQueue<Node> closedpq = new PriorityQueue<>(new NodeComparator());
+
             openpq.add(start);
             closedpq.add(start);
-
-            //todo never change anything for graph until you're actually setting the color, set parents and such using localsearchgraph
 
             while (!openpq.isEmpty()) {
                 Node min = openpq.poll();
@@ -117,24 +107,18 @@ public class AStarPathFinding extends PathFinder {
                         if (i == min.getNodeX() && j == min.getNodeY())
                             continue;
 
-                        //valid neighbor
                         if ((i >= 0 && j >= 0 && i < 40 && j < 40) && localSearchGraph[i][j] != null) {
-                            //System.out.println("Neighbor of (" + min.getNodeX() + "," + min.getNodeY() + ") is (" + i + "," + j + ")");
-                            Node currentNeighbor = new Node(i,j);
-                            currentNeighbor.setNodeX(i);
-                            currentNeighbor.setNodeY(j);
+                            graph[i][j] = new Node(i,j);
 
-                            if (!contains(currentNeighbor,openpq) && !contains(currentNeighbor, closedpq)) {
-                                //currentNeighbor.setgCost(min.getGCost() + dist(min,currentNeighbor));
-                                currentNeighbor.setNodeParent(min);
-                                openpq.add(currentNeighbor);
-                                //System.out.println("added: (" + currentNeighbor.getNodeX() + "," + currentNeighbor.getNodeY() + ")");
+                            if (graph[i][j].getType() != Node.PATH && graph[i][j].getType() == Node.PATHABLE) {
+                                graph[i][j].setType(Node.PATH);
+                                graph[i][j].setFill(Color.rgb(230, 153, 0, 0.5));
                             }
 
-//                            else if (min.getGCost() + dist(min, currentNeighbor) < currentNeighbor.getGCost()) {
-//                                currentNeighbor.setgCost(min.getGCost() + dist(min, currentNeighbor));
-//                                currentNeighbor.setNodeParent(min);
-//                            }
+                            //todo make sure pacman can go through these colored path squares
+
+                            Controller.gameDrawRoot.getChildren().remove(graph[i][j]);
+                            Controller.gameDrawRoot.getChildren().add(graph[i][j]);
                         }
                     }
                 }
@@ -177,6 +161,7 @@ public class AStarPathFinding extends PathFinder {
     }
 
     private double dist(Node one, Node two) {
+        System.out.println("Distnace: " +  Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2)));
         return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
     }
 }

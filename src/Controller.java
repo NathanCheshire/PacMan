@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 import java.awt.*;
@@ -34,7 +35,6 @@ public class Controller {
     private long gameTimeout = 500000000;
 
     //var used to decrease gameTimeout for hardmode
-    //todo make sure to reset gameTimeout and speedUpCounter on reset
     private long speedUpCounter = 0;
 
     //checkbox booleans
@@ -65,7 +65,7 @@ public class Controller {
     private boolean gameRunning = false;
 
     //the pane we can add children to such as nodes, ghosts, and pacman
-    private static Pane gameDrawRoot;
+    public static Pane gameDrawRoot;
 
     //mouse vars
     private double xGame;
@@ -130,6 +130,7 @@ public class Controller {
                         if (grid[xNode][yNode] == null) {
                             Node node = new Node(xNode,yNode);
                             node.setType(Node.WALL);
+                            node.setFill(Color.rgb(0, 0, 0,1));
                             grid[xNode][yNode] = node;
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
                         }
@@ -162,6 +163,7 @@ public class Controller {
                         if (grid[xNode][yNode] == null) {
                             Node node = new Node(xNode,yNode);
                             node.setType(Node.WALL);
+                            node.setFill(Color.rgb(0, 0, 0,1));
                             grid[xNode][yNode] = node;
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
                         }
@@ -563,6 +565,9 @@ public class Controller {
             drawWallsButton.setText("Walls: Remove");
         }
     }
+
+    //todo working on refreshing paths every turn. the opacity just builds up. also walls are colored to it too
+    //todo also pacman cannot go through paths but he should be able to
 
     private void updateGameDrawRoot() {
         gameDrawRoot.getChildren().removeAll(pac,inky,blinky,pinky,clyde);

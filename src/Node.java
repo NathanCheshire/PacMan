@@ -1,13 +1,8 @@
-import java.awt.*;
+import javafx.scene.paint.Color;
 
 public class Node extends javafx.scene.shape.Rectangle {
     //constants
     public static final int INFINITY = Integer.MAX_VALUE;
-
-    //node colors and our color
-    public static final Color wallC = new Color(0,0,0);
-    public static final Color path = new Color(230,153,0);
-    private static Color color = wallC;
 
     //node types and our type
     public static final int WALL = 0;
@@ -27,7 +22,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     private static int type;
 
     //used by both
-    private static Node parent;
+    private Node parent;
 
     //used by dijkastras
     private static double distance;
@@ -42,12 +37,13 @@ public class Node extends javafx.scene.shape.Rectangle {
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);
         this.setType(Node.PATHABLE); //pathable by default
-        this.setFill(javafx.scene.paint.Color.rgb(color.getRed(),color.getGreen(),color.getBlue()));
+        this.setFill(Color.rgb(0, 0, 0,0));
     }
 
     public double getDistance() {
         return this.distance;
     }
+
     public void setDistance(double distance) {
         this.distance = distance;
     }
@@ -55,6 +51,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     public int getNodeX() {
         return (int) (this.getTranslateX() / 10.0);
     }
+
     public void setNodeX(int x) {
         this.setTranslateX(x * 10);
     }
@@ -69,6 +66,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     public Node getNodeParent() {
         return parent;
     }
+
     public void setNodeParent(Node parent) {
         this.parent = parent;
     }
@@ -76,6 +74,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     public double getGCost() {
         return this.gCost;
     }
+
     public void setgCost(double gCost) {
         this.gCost = gCost;
     }
@@ -83,6 +82,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     public double getHCost() {
         return this.hCost;
     }
+
     public void setHCost(double hCost) {
         this.hCost = hCost;
     }
@@ -91,16 +91,9 @@ public class Node extends javafx.scene.shape.Rectangle {
         return this.getGCost() + this.getHCost();
     }
 
-    public Color getColor() {return this.color; }
-    public void setColor(Color color) {
-        this.color = color;
-        this.setFill(javafx.scene.paint.Color.rgb(color.getRed(),color.getGreen(),color.getBlue()));
-    }
-
     public int getType() { return this.type; }
     public void setType(int type) {
         this.type = type;
-
     }
 
     public boolean isVisited() { return this.visited; }

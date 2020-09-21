@@ -4,6 +4,7 @@ import javafx.scene.paint.ImagePattern;
 public class Ghost extends Node {
     //ghosts postiion
     private static Node position;
+    private static Node[][] graph;
 
     //if we should render this ghost and path find
     private boolean enabled;
@@ -65,8 +66,9 @@ public class Ghost extends Node {
         return this.position;
     }
 
-    public void step(Node[][] refreshedGraph) {
-        pathFinder.resfreshPath(refreshedGraph);
+    public void step(Node[][] rgraph) {
+        this.graph = rgraph;
+        pathFinder.resfreshPath(graph);
     }
 
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

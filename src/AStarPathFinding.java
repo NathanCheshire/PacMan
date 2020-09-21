@@ -9,6 +9,7 @@ public class AStarPathFinding extends PathFinder {
 
     //graph is used for moving but we path find which one we should move to using a copy of it
     private static Node[][] graph;
+    private Node[][] localGraph;
     private static Pac pac;
     private Ghost controlGhost;
 
@@ -57,52 +58,93 @@ public class AStarPathFinding extends PathFinder {
             int goalX = pac.getExactX();
             int goalY = pac.getExactY();
 
-            //todo path find from (ghostX, ghostY) to (pacX, pacY). If possible, take a step in the best direction
-            //can only go through nodes that are marked as null in graph
+            //first lets print our graph [r,c]
+            printGraph(graph);
 
-            //first lets print our graph (row,column)
-            for (int col = 0 ; col < 40 ; col++) {
-                 for (int row = 0 ; row < 40 ; row++) {
-                    if (graph[row][col].getNodeType() == Node.PATHABLE) {
-                        System.out.print("- ");
-                    }
+            //todo 1: path find from (ghostX, ghostY) to (pacX, pacY).
+            //todo 2: if theres a path, draw it from the edge of the ghost to the edge of pac man
+            //todo 3: take a step in the right direction
 
-                    else if (graph[row][col].getNodeType() == Node.PAC){
-                        System.out.print("* ");
-                    }
+            //open and closed queues so we do not check a node more than once for A*
+            PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
+            PriorityQueue<Node> closed = new PriorityQueue<>(new NodeComparator());
 
-                    else if (graph[row][col].getNodeType() == Node.INKY) {
-                        System.out.print("I ");
-                    }
+            //local graph init so that we can set parents and g costs without changing the main graph
+            localGraph = graph;
+            localGraph[startX][startY].setgCost(0);
+            open.add(localGraph[startX][startY]);
 
-                    else if (graph[row][col].getNodeType() == Node.BLINKY) {
-                        System.out.print("B ");
-                    }
+            while (!open.isEmpty()) {
+                Node min = open.poll();
 
-                    else if (graph[row][col].getNodeType() == Node.PINKY) {
-                        System.out.print("P ");
-                    }
-
-                    else if (graph[row][col].getNodeType() == Node.CLYDE) {
-                        System.out.print("C ");
-                    }
-
-                    else if (graph[row][col].getNodeType() == Node.WALL) {
-                        System.out.print("W ");
-                    }
+                if (min.getNodeX() == goalX && min.getNodeY() == goalY) {
+                    System.out.println("Path found");
+                    //todo reconstruct path
+                    return;
                 }
 
-                System.out.println();
+                closed.add(min);
+
+                for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
+                    for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
+                        if (i >= 0 && j >= 0 && i < 40 && j < 40 && localGraph[i][j].getNodeType() == Node.PATHABLE) {
+                            //valid neighbors are found here
+                            System.out.println("Neighbor for (" + min.getNodeX() + "," + min.getNodeY() + ") found: (" + i + "," + j + ")");
+
+                            if (!contains(localGraph[i][j], open) && !contains(localGraph[i][j],closed)) {
+                                localGraph[i][j].setgCost(min.getGCost() + dist(min, localGraph[i][j]));
+                                localGraph[i][j].setNodeParent(min);
+                                open.add(localGraph[i][j]);
+                            }
+
+                            else if (min.getGCost() + dist(min, localGraph[i][j]) < localGraph[i][j].getGCost()) {
+                                localGraph[i][j].setgCost(min.getGCost() + dist(min, localGraph[i][j]));
+                                localGraph[i][j].setNodeParent(min);
+                            }
+                        }
+                    }
+                }
             }
 
-            System.out.println();
-            System.out.println();
-            System.out.println();
+            System.out.println("No path found from (" + startX + "," + startY + ") to (" + goalX + "," + goalY + ")");
         }
 
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //prints the visual representation of a 2d array of nodes
+    private void printGraph(Node[][] NodeArr) {
+        for (int col = 0 ; col < 40 ; col++) {
+            for (int row = 0 ; row < 40 ; row++) {
+                //only go through nodes that are Node.PATHABLE
+                if (NodeArr[row][col].getNodeType() == Node.PATHABLE)
+                    System.out.print("- ");
+
+                else if (NodeArr[row][col].getNodeType() == Node.PAC)
+                    System.out.print("* ");
+
+                else if (NodeArr[row][col].getNodeType() == Node.INKY)
+                    System.out.print("I ");
+
+                else if (NodeArr[row][col].getNodeType() == Node.BLINKY)
+                    System.out.print("B ");
+
+                else if (NodeArr[row][col].getNodeType() == Node.PINKY)
+                    System.out.print("P ");
+
+                else if (NodeArr[row][col].getNodeType() == Node.CLYDE)
+                    System.out.print("C ");
+
+                else if (NodeArr[row][col].getNodeType() == Node.WALL)
+                    System.out.print("W ");
+            }
+
+            System.out.println();
+        }
+
+        System.out.println("\n\n\n");
     }
 
     //this method tests weather or not a priority queue has a node with the same coordinates

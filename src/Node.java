@@ -19,7 +19,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int PAC = 9;
 
     //default nodeType is pathable
-    private int nodeType = 4;
+    private int nodeType = PATHABLE;
 
     //used by both
     private Node parent;
@@ -36,7 +36,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);
-        this.setNodeType(Node.PATHABLE);
         this.setFill(Color.rgb(0, 0, 0,0));
     }
 
@@ -94,6 +93,12 @@ public class Node extends javafx.scene.shape.Rectangle {
     public int getNodeType() { return this.nodeType; }
     public void setNodeType(int type) {
         this.nodeType = type;
+
+        if (type == Node.WALL)
+            this.setFill(Color.rgb(0, 0, 0,1));
+
+        else if (type == Node.PATH)
+            this.setFill(Color.rgb(0, 0, 0,0));
     }
 
     public boolean isVisited() { return this.visited; }

@@ -117,15 +117,11 @@ public class Controller {
 
         startMouseUpdates();
 
-        //init grid
-        System.out.println("here");
         grid = new Node[40][40];
-        for (int i = 0 ; i < 40 ; i++) {
-            for (int j = 0 ; j < 40 ; j++) {
+
+        for (int i = 0 ; i < 40 ; i++)
+            for (int j = 0 ; j < 40 ; j++)
                 grid[i][j] = new Node(i,j);
-                System.out.println(grid[i][j]);
-            }
-        }
 
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             try {
@@ -135,7 +131,6 @@ public class Controller {
                 if (drawWallsMode && !gameRunning) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
-                            System.out.println("path: " + xNode + "," + yNode);
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
                             grid[xNode][yNode].setNodeType(Node.WALL);
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
@@ -146,10 +141,11 @@ public class Controller {
 
                 else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        System.out.println("pathable: " + xNode + "," + yNode);
-                        gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
-                        grid[xNode][yNode] = new Node(xNode, yNode);
-                        gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+                        if (grid[xNode][yNode].getNodeType() == Node.WALL) {
+                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                            grid[xNode][yNode] = new Node(xNode, yNode);
+                            gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+                        }
                     }
                 }
             }
@@ -167,7 +163,6 @@ public class Controller {
                 if (drawWallsMode && !gameRunning) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
-                            System.out.println("path: " + xNode + "," + yNode);
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
                             grid[xNode][yNode].setNodeType(Node.WALL);
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
@@ -178,10 +173,11 @@ public class Controller {
 
                 else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        System.out.println("pathable: " + xNode + "," + yNode);
-                        gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
-                        grid[xNode][yNode] = new Node(xNode, yNode);
-                        gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+                        if (grid[xNode][yNode].getNodeType() == Node.WALL) {
+                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                            grid[xNode][yNode] = new Node(xNode, yNode);
+                            gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+                        }
                     }
                 }
             }
@@ -191,7 +187,6 @@ public class Controller {
             }
         });
 
-        //initiate game pane
         gameDrawRoot = new Pane();
 
         for (int i = 0 ; i <= 400 ; i += 10) {

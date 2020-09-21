@@ -47,7 +47,7 @@ public class AStarPathFinding extends PathFinder {
     }
 
     @Override
-    public void resfreshPath(Node[][] graph) {
+    public void refreshPath(Node[][] graph) {
         try {
             this.graph = graph;
 
@@ -60,7 +60,44 @@ public class AStarPathFinding extends PathFinder {
             //todo path find from (ghostX, ghostY) to (pacX, pacY). If possible, take a step in the best direction
             //can only go through nodes that are marked as null in graph
 
-            //first lets print our graph
+            //first lets print our graph (row,column)
+            for (int col = 0 ; col < 40 ; col++) {
+                 for (int row = 0 ; row < 40 ; row++) {
+                    if (graph[row][col] == null) {
+                        System.out.print("- ");
+                    }
+
+                    else if (graph[row][col].getType() == Node.PAC){
+                        System.out.print("* ");
+                    }
+
+                    else if (graph[row][col].getType() == Node.INKY) {
+                        System.out.print("I ");
+                    }
+
+                    else if (graph[row][col].getType() == Node.BLINKY) {
+                        System.out.print("B ");
+                    }
+
+                    else if (graph[row][col].getType() == Node.PINKY) {
+                        System.out.print("P ");
+                    }
+
+                    else if (graph[row][col].getType() == Node.CLYDE) {
+                        System.out.print("C ");
+                    }
+
+                    else if (graph[row][col].getType() == Node.WALL) {
+                        System.out.print("W ");
+                    }
+                }
+
+                System.out.println();
+            }
+
+            System.out.println();
+            System.out.println();
+            System.out.println();
         }
 
         catch (Exception e) {
@@ -79,7 +116,7 @@ public class AStarPathFinding extends PathFinder {
             }
 
         }
-        //System.out.println("Doesn't have it");
+
         return false;
     }
 
@@ -98,7 +135,6 @@ public class AStarPathFinding extends PathFinder {
 
     //distance function for Nodes, max should be 56.56
     private double dist(Node one, Node two) {
-        //System.out.println("Distnace: " +  Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2)));
         return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
     }
 }

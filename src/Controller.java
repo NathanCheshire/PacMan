@@ -429,7 +429,7 @@ public class Controller {
         if (hardModeEnable) {
             if (inky != null) {
                 if (nsecondsInkySeen / 10.0  == 500000000)
-                    endGame();
+                    endGame("inky");
 
                 if (straightSight(inky.getExactX(), inky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsInkySeen += gameTimeout;
@@ -440,7 +440,7 @@ public class Controller {
 
             if (blinky != null) {
                 if (nsecondsBlinkySeen / 10.0  == 500000000)
-                    endGame();
+                    endGame("blinky");
 
                 if (straightSight(blinky.getExactX(), blinky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsBlinkySeen += gameTimeout;
@@ -451,7 +451,7 @@ public class Controller {
 
             if (pinky != null) {
                 if (nsecondsPinkySeen / 10.0  == 500000000)
-                    endGame();
+                    endGame("pinky");
 
                 if (straightSight(pinky.getExactX(), pinky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsPinkySeen += gameTimeout;
@@ -462,7 +462,7 @@ public class Controller {
 
             if (clyde != null) {
                 if (nsecondsClydeSeen / 10.0  == 500000000)
-                    endGame();
+                    endGame("clyde");
 
                 if (straightSight(clyde.getExactX(), clyde.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsClydeSeen += gameTimeout;
@@ -491,8 +491,9 @@ public class Controller {
         if (clydeEnable.isSelected())
             clyde.step(grid);
 
-        if (isDead())
-            endGame();
+        String dead = isDead();
+        if (!dead.equals("null"))
+            endGame(dead);
     }
 
     private void startMouseUpdates() {
@@ -643,8 +644,8 @@ public class Controller {
         }
     }
 
-    private void endGame() {
-        System.out.println("You were killed by a ghost\nPress reset to play again");
+    private void endGame(String name) {
+        System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
         
         inkyEnable.setDisable(true);
         blinkyEnable.setDisable(true);
@@ -749,69 +750,71 @@ public class Controller {
         System.exit(0);
     }
 
-    private boolean isDead() {
+    private String isDead() {
         if (inky != null) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == inky.getExactX() && pac.getExactY() == inky.getExactY()))
-                return true;
+                return "inky";
             //right
             if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == inky.getExactX() && pac.getExactY() == inky.getExactY()))
-                return true;
+                return "inky";
             //up
             if (pac.getExactY() + 1 < 40 && (pac.getExactX() == inky.getExactX() && pac.getExactY() + 1 == inky.getExactY()))
-                return true;
+                return "inky";
             //down
             if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == inky.getExactX() && pac.getExactY() - 1 == inky.getExactY()))
-                return true;
+                return "inky";
         }
 
         if (blinky != null) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY()))
-                return true;
+                return "blinky";
             //right
             if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY()))
-                return true;
+                return "blinky";
             //up
             if (pac.getExactY() + 1 < 40 && (pac.getExactX() == blinky.getExactX() && pac.getExactY() + 1 == blinky.getExactY()))
-                return true;
+                return "blinky";
             //down
             if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == blinky.getExactX() && pac.getExactY() - 1 == blinky.getExactY()))
-                return true;
+                return "blinky";
         }
 
         if (pinky != null) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY()))
-                return true;
+                return "pinky";
             //right
             if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY()))
-                return true;
+                return "pinky";
             //up
             if (pac.getExactY() + 1 < 40 && (pac.getExactX() == pinky.getExactX() && pac.getExactY() + 1 == pinky.getExactY()))
-                return true;
+                return "pinky";
             //down
             if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == pinky.getExactX() && pac.getExactY() - 1 == pinky.getExactY()))
-                return true;
+                return "pinky";
         }
 
         if (clyde != null) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()))
-                return true;
+                return "clyde";
             //right
             if (pac.getExactX() + 1 < 40 && (pac.getExactX() + 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()))
-                return true;
+                return "clyde";
             //up
             if (pac.getExactY() + 1 < 40 && (pac.getExactX() == clyde.getExactX() && pac.getExactY() + 1 == clyde.getExactY()))
-                return true;
+                return "clyde";
             //down
-            return pac.getExactY() - 1 >= 0 && (pac.getExactX() == clyde.getExactX() && pac.getExactY() - 1 == clyde.getExactY());
+            if (pac.getExactY() - 1 >= 0 && (pac.getExactX() == clyde.getExactX() && pac.getExactY() - 1 == clyde.getExactY()))
+                return "clyde";
         }
 
-        return false;
+        return "null";
     }
 
+    //todo you can probably make sure that pac can/can't move through certain types right here
     private EventHandler<KeyEvent> pacMovement = new EventHandler<>() {
         @Override
         public void handle(KeyEvent keyEvent) {

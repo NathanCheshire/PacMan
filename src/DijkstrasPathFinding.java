@@ -36,7 +36,7 @@ public class DijkstrasPathFinding extends PathFinder {
     }
 
     @Override
-    public void resfreshPath(Node[][] graph) {
+    public void refreshPath(Node[][] graph) {
         this.graph = graph;
         System.out.println("Refreshing dijkastras path and stepping towards (" + pac.getExactX() + "," + pac.getExactY() + ")");
 

@@ -19,7 +19,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int PAC = 9;
 
     //default nodeType is pathable
-    private static int nodeType = 4;
+    private int nodeType = 4;
 
     //used by both
     private Node parent;
@@ -93,7 +93,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     public int getNodeType() { return this.nodeType; }
     public void setNodeType(int type) {
-        System.out.println("setting type to " + type);
         this.nodeType = type;
     }
 

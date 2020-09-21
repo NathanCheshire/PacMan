@@ -123,36 +123,65 @@ public class Controller {
         for (int i = 0 ; i < 40 ; i++) {
             for (int j = 0 ; j < 40 ; j++) {
                 grid[i][j] = new Node(i,j);
+                System.out.println(grid[i][j]);
             }
         }
 
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
-            //todo copy from below
-        });
-
-        Main.primaryStage.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-
             try {
                 int xNode = (int) Math.round(xGame / 10.0);
                 int yNode = (int) Math.round(yGame / 10.0);
 
-                //todo when we update one node, we update the rest of them somehow like what the fuck
-
                 if (drawWallsMode && !gameRunning) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-
                         if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
+                            System.out.println("path: " + xNode + "," + yNode);
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
                             grid[xNode][yNode].setNodeType(Node.WALL);
-                            grid[xNode][yNode].setFill(javafx.scene.paint.Color.rgb(0,0,0,1));
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+
                         }
                     }
                 }
 
                 else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        //remove wall
+                        System.out.println("pathable: " + xNode + "," + yNode);
+                        gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                        grid[xNode][yNode] = new Node(xNode, yNode);
+                        gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+                    }
+                }
+            }
+
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        Main.primaryStage.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+            try {
+                int xNode = (int) Math.round(xGame / 10.0);
+                int yNode = (int) Math.round(yGame / 10.0);
+
+                if (drawWallsMode && !gameRunning) {
+                    if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
+                        if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
+                            System.out.println("path: " + xNode + "," + yNode);
+                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                            grid[xNode][yNode].setNodeType(Node.WALL);
+                            gameDrawRoot.getChildren().add(grid[xNode][yNode]);
+
+                        }
+                    }
+                }
+
+                else if (!gameRunning && !drawWallsMode){
+                    if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
+                        System.out.println("pathable: " + xNode + "," + yNode);
+                        gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                        grid[xNode][yNode] = new Node(xNode, yNode);
+                        gameDrawRoot.getChildren().add(grid[xNode][yNode]);
                     }
                 }
             }

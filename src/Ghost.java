@@ -26,7 +26,7 @@ public class Ghost extends Node {
         super((x) * 10,(y) * 10);
         
         this.type = type;
-        super.setType(type);
+        super.setNodeType(type);
 
         this.position = new Node(x,y);
         
@@ -50,7 +50,7 @@ public class Ghost extends Node {
         }
     }
 
-    public int getType() {
+    public int getNodeType() {
         return this.type;
     }
 

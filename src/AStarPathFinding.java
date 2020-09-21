@@ -63,31 +63,31 @@ public class AStarPathFinding extends PathFinder {
             //first lets print our graph (row,column)
             for (int col = 0 ; col < 40 ; col++) {
                  for (int row = 0 ; row < 40 ; row++) {
-                    if (graph[row][col] == null) {
+                    if (graph[row][col].getNodeType() == Node.PATHABLE) {
                         System.out.print("- ");
                     }
 
-                    else if (graph[row][col].getType() == Node.PAC){
+                    else if (graph[row][col].getNodeType() == Node.PAC){
                         System.out.print("* ");
                     }
 
-                    else if (graph[row][col].getType() == Node.INKY) {
+                    else if (graph[row][col].getNodeType() == Node.INKY) {
                         System.out.print("I ");
                     }
 
-                    else if (graph[row][col].getType() == Node.BLINKY) {
+                    else if (graph[row][col].getNodeType() == Node.BLINKY) {
                         System.out.print("B ");
                     }
 
-                    else if (graph[row][col].getType() == Node.PINKY) {
+                    else if (graph[row][col].getNodeType() == Node.PINKY) {
                         System.out.print("P ");
                     }
 
-                    else if (graph[row][col].getType() == Node.CLYDE) {
+                    else if (graph[row][col].getNodeType() == Node.CLYDE) {
                         System.out.print("C ");
                     }
 
-                    else if (graph[row][col].getType() == Node.WALL) {
+                    else if (graph[row][col].getNodeType() == Node.WALL) {
                         System.out.print("W ");
                     }
                 }

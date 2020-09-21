@@ -1,25 +1,25 @@
 import javafx.scene.paint.Color;
 
 public class Node extends javafx.scene.shape.Rectangle {
-    //constants
+    //used for gscore
     public static final int INFINITY = Integer.MAX_VALUE;
 
-    //node types and our type
+    //node types and our nodeType
     public static final int WALL = 0;
     public static final int HAS_CHECKED = 1;
     public static final int TO_CHECK = 2;
     public static final int PATH = 3;
+    public static final int PATHABLE = 4;
 
-    public static final int PATHABLE = 20;
+    public static final int INKY = 5;
+    public static final int BLINKY = 6;
+    public static final int PINKY = 7;
+    public static final int CLYDE = 8;
 
-    public static final int INKY = 4;
-    public static final int BLINKY = 5;
-    public static final int PINKY = 6;
-    public static final int CLYDE = 7;
+    public static final int PAC = 9;
 
-    public static final int PAC = 8;
-
-    private static int type = PATHABLE;
+    //default nodeType is pathable
+    private static int nodeType = 4;
 
     //used by both
     private Node parent;
@@ -36,6 +36,7 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);
+        this.setNodeType(Node.PATHABLE);
         this.setFill(Color.rgb(0, 0, 0,0));
     }
 
@@ -90,9 +91,9 @@ public class Node extends javafx.scene.shape.Rectangle {
         return this.getGCost() + this.getHCost();
     }
 
-    public int getType() { return this.type; }
-    public void setType(int type) {
-        this.type = type;
+    public int getNodeType() { return this.nodeType; }
+    public void setNodeType(int type) {
+        this.nodeType = type;
     }
 
     public boolean isVisited() { return this.visited; }
@@ -100,6 +101,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     @Override
     public String toString() {
-        return ("[" + getType() + ", (" + getNodeX() + "," + getNodeY() + ")" + "]");
+        return ("[" + getNodeType() + ", (" + getNodeX() + "," + getNodeY() + ")" + "]");
     }
 }

@@ -14,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 import java.awt.*;
@@ -118,7 +117,14 @@ public class Controller {
 
         startMouseUpdates();
 
-        //todo start/stop change of algorithms doesn't work
+        //init grid
+        grid = new Node[40][40];
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
+                grid[i][j] = new Node(i,j);
+                grid[i][j].setNodeType(Node.PATHABLE);
+            }
+        }
 
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             try {
@@ -127,11 +133,9 @@ public class Controller {
 
                 if (drawWallsMode && !gameRunning) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        if (grid[xNode][yNode] == null) {
-                            Node node = new Node(xNode,yNode);
-                            node.setType(Node.WALL);
-                            node.setFill(Color.rgb(0, 0, 0,1));
-                            grid[xNode][yNode] = node;
+                        if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
+                            //todo set to wall
+                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
                         }
                     }
@@ -139,11 +143,12 @@ public class Controller {
 
                 else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        if (grid[xNode][yNode] != null && grid[xNode][yNode].getType() == Node.WALL) {
+                        if (grid[xNode][yNode].getNodeType() == Node.WALL) {
+                            //todo set to pathable
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
-                            grid[xNode][yNode] = null;
-                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                            gameDrawRoot.getChildren().add(grid[xNode][yNode]);
                         }
+
                     }
                 }
             }
@@ -154,45 +159,8 @@ public class Controller {
         });
 
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-            try {
-                int xNode = (int) Math.round(xGame / 10.0);
-                int yNode = (int) Math.round(yGame / 10.0);
-
-                if (drawWallsMode && !gameRunning) {
-                    if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        if (grid[xNode][yNode] == null) {
-                            Node node = new Node(xNode,yNode);
-                            node.setType(Node.WALL);
-                            node.setFill(Color.rgb(0, 0, 0,1));
-                            grid[xNode][yNode] = node;
-                            gameDrawRoot.getChildren().add(grid[xNode][yNode]);
-                        }
-                    }
-                }
-
-                else if (!gameRunning && !drawWallsMode){
-                    if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        if (grid[xNode][yNode] != null && grid[xNode][yNode].getType() == Node.WALL) {
-                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
-                            grid[xNode][yNode] = null;
-                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
-                        }
-                    }
-                }
-            }
-
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+            //todo copy from above
         });
-
-        //init grid
-        grid = new Node[40][40];
-        for (int i = 0 ; i < 40 ; i++) {
-            for (int j = 0 ; j < 40 ; j++) {
-                grid[i][j] = null;
-            }
-        }
 
         //initiate game pane
         gameDrawRoot = new Pane();
@@ -225,7 +193,7 @@ public class Controller {
             int pacX = rn.nextInt(40);
             int pacY = rn.nextInt(40);
 
-            while (grid[pacX][pacY] != null) {
+            while (grid[pacX][pacY].getNodeType() != Node.PATHABLE) {
                 pacX = rn.nextInt(40);
                 pacY = rn.nextInt(40);
             }
@@ -244,7 +212,9 @@ public class Controller {
             int inkyX = rn.nextInt(40);
             int inkyY = rn.nextInt(40);
 
-            while (grid[inkyX][inkyY] != null) {
+
+            while (grid[inkyX][inkyY].getNodeType() != Node.PATHABLE) {
+                System.out.println(grid[inkyX][inkyY].getNodeType());
                 inkyX = rn.nextInt(40);
                 inkyY = rn.nextInt(40);
             }
@@ -278,7 +248,7 @@ public class Controller {
             int blinkyX = rn.nextInt(40);
             int blinkyY = rn.nextInt(40);
 
-            while (grid[blinkyX][blinkyY] != null) {
+            while (grid[blinkyX][blinkyY].getNodeType() != Node.PATHABLE) {
                 blinkyX = rn.nextInt(40);
                 blinkyY = rn.nextInt(40);
             }
@@ -312,7 +282,7 @@ public class Controller {
             int pinkyX = rn.nextInt(40);
             int pinkyY = rn.nextInt(40);
 
-            while (grid[pinkyX][pinkyY] != null) {
+            while (grid[pinkyX][pinkyY].getNodeType() != Node.PATHABLE) {
                 pinkyX = rn.nextInt(40);
                 pinkyY = rn.nextInt(40);
             }
@@ -344,15 +314,20 @@ public class Controller {
             clyde = new Ghost(0, 0,Ghost.CLYDE);
 
             int clydeX = rn.nextInt(40);
-            int clydelY = rn.nextInt(40);
+            int clydeY = rn.nextInt(40);
+
+            while (grid[clydeX][clydeY].getNodeType() != Node.PATHABLE) {
+                clydeX = rn.nextInt(40);
+                clydeY = rn.nextInt(40);
+            }
 
             clyde.setTranslateX(clydeX * 10);
-            clyde.setTranslateY(clydelY * 10);
+            clyde.setTranslateY(clydeY * 10);
 
-            grid[clydeX][clydelY] = clyde;
+            grid[clydeX][clydeY] = clyde;
 
             clyde.setExactX(clydeX);
-            clyde.setExactY(clydelY);
+            clyde.setExactY(clydeY);
 
             String choice = clydeChoice.getValue();
 
@@ -398,7 +373,7 @@ public class Controller {
             int maxy = Math.max(startY, goalY);
 
             while (miny != maxy) {
-                if (grid[startX][miny] != null)
+                if (grid[startX][miny].getNodeType() != Node.PATHABLE)
                     return false;
                 miny++;
             }
@@ -411,7 +386,7 @@ public class Controller {
             int maxx = Math.max(startX, goalX);
 
             while (minx != maxx) {
-                if (grid[minx][startY] != null)
+                if (grid[minx][startY].getNodeType() != Node.PATHABLE)
                     return false;
 
                 minx++;
@@ -523,13 +498,10 @@ public class Controller {
 
     @FXML
     public ChoiceBox<String> inkyChoice;
-
     @FXML
     public ChoiceBox<String> blinkyChoice;
-
     @FXML
     public ChoiceBox<String> pinkyChoice;
-
     @FXML
     public ChoiceBox<String> clydeChoice;
 
@@ -567,9 +539,6 @@ public class Controller {
         }
     }
 
-    //todo working on refreshing paths every turn. the opacity just builds up. also walls are colored to it too
-    //todo also pacman cannot go through paths but he should be able to
-
     private void updateGameDrawRoot() {
         gameDrawRoot.getChildren().removeAll(pac,inky,blinky,pinky,clyde);
         gameDrawRoot.getChildren().add(pac);
@@ -603,11 +572,6 @@ public class Controller {
             blinkyEnable.setDisable(false);
             pinkyEnable.setDisable(false);
             clydeEnable.setDisable(false);
-
-            inkyChoice.setDisable(false);
-            blinkyChoice.setDisable(false);
-            pinkyChoice.setDisable(false);
-            clydeChoice.setDisable(false);
 
             drawWallsButton.setDisable(false);
             showPathsCheck.setDisable(false);
@@ -672,31 +636,31 @@ public class Controller {
     private void resetGame(ActionEvent e) {
         System.out.println("Reset Game");
         startButton.setDisable(false);
+        startButton.setText("Start Game");
+        drawWallsMode = true;
+        drawWallsButton.setText("Walls: Draw");
 
         if (gameRunning) {
-            startButton.setText("Start Game");
-            gameRunning = !gameRunning;
-            drawWallsMode = true;
-            drawWallsButton.setText("Walls: Draw");
+            gameRunning = false;
 
             tim.stop();
             tim = null;
             Main.primaryStage.removeEventFilter(KeyEvent.KEY_PRESSED, pacMovement);
-
-            inkyEnable.setDisable(false);
-            blinkyEnable.setDisable(false);
-            pinkyEnable.setDisable(false);
-            clydeEnable.setDisable(false);
-
-            inkyChoice.setDisable(false);
-            blinkyChoice.setDisable(false);
-            pinkyChoice.setDisable(false);
-            clydeChoice.setDisable(false);
-
-            drawWallsButton.setDisable(false);
-            hardModeCheck.setDisable(false);
-            showPathsCheck.setDisable(false);
         }
+
+        inkyEnable.setDisable(false);
+        blinkyEnable.setDisable(false);
+        pinkyEnable.setDisable(false);
+        clydeEnable.setDisable(false);
+
+        inkyChoice.setDisable(false);
+        blinkyChoice.setDisable(false);
+        pinkyChoice.setDisable(false);
+        clydeChoice.setDisable(false);
+
+        drawWallsButton.setDisable(false);
+        hardModeCheck.setDisable(false);
+        showPathsCheck.setDisable(false);
 
         gameDrawRoot.getChildren().clear();
         pac = null;
@@ -719,7 +683,8 @@ public class Controller {
 
         for (int i = 0 ; i < grid.length ; i++) {
             for (int j = 0 ; j < grid[0].length ; j++) {
-                grid[i][j] = null;
+                grid[i][j] = new Node(i,j);
+                grid[i][j].setNodeType(Node.PATHABLE);
             }
         }
 
@@ -814,38 +779,37 @@ public class Controller {
         return "null";
     }
 
-    //todo you can probably make sure that pac can/can't move through certain types right here
     private EventHandler<KeyEvent> pacMovement = new EventHandler<>() {
         @Override
         public void handle(KeyEvent keyEvent) {
             if (gameRunning) {
                 switch (keyEvent.getCode()) {
                     case A:
-                        if (pac.getExactX() - 1 >= 0 && grid[pac.getExactX() - 1][pac.getExactY()] == null) {
-                            grid[pac.getExactX()][pac.getExactY()] = null;
+                        if (pac.getExactX() - 1 >= 0 && grid[pac.getExactX() - 1][pac.getExactY()].getNodeType() == Node.PATHABLE) {
+                            grid[pac.getExactX()][pac.getExactY()] = new Node(pac.getExactX(), pac.getExactY());
                             pac.setTranslateX(pac.getTranslateX() - 10.0);
                             pac.setExactX(pac.getExactX() - 1);
                         }
                         break;
                     case S:
-                        if (pac.getExactY() + 1 < 40 && grid[pac.getExactX()][pac.getExactY() + 1] == null) {
-                            grid[pac.getExactX()][pac.getExactY()] = null;
+                        if (pac.getExactY() + 1 < 40 && grid[pac.getExactX()][pac.getExactY() + 1].getNodeType() == Node.PATHABLE) {
+                            grid[pac.getExactX()][pac.getExactY()] = new Node(pac.getExactX(), pac.getExactY());
                             pac.setTranslateY(pac.getTranslateY() + 10.0);
                             pac.setExactY(pac.getExactY() + 1);
                             grid[pac.getExactX()][pac.getExactY()] = pac;
                         }
                         break;
                     case D:
-                        if (pac.getExactX() + 1 < 40 && grid[pac.getExactX() + 1][pac.getExactY()] == null) {
-                            grid[pac.getExactX()][pac.getExactY()] = null;
+                        if (pac.getExactX() + 1 < 40 && grid[pac.getExactX() + 1][pac.getExactY()].getNodeType() == Node.PATHABLE) {
+                            grid[pac.getExactX()][pac.getExactY()] = new Node(pac.getExactX(), pac.getExactY());
                             pac.setTranslateX(pac.getTranslateX() + 10.0);
                             pac.setExactX(pac.getExactX() + 1);
                             grid[pac.getExactX()][pac.getExactY()] = pac;
                         }
                         break;
                     case W:
-                        if (pac.getExactY() - 1 >= 0 && grid[pac.getExactX()][pac.getExactY() - 1] == null) {
-                            grid[pac.getExactX()][pac.getExactY()] = null;
+                        if (pac.getExactY() - 1 >= 0 && grid[pac.getExactX()][pac.getExactY() - 1].getNodeType() == Node.PATHABLE) {
+                            grid[pac.getExactX()][pac.getExactY()] = new Node(pac.getExactX(), pac.getExactY());
                             pac.setTranslateY(pac.getTranslateY() - 10.0);
                             pac.setExactY(pac.getExactY() - 1);
                             grid[pac.getExactX()][pac.getExactY()] = pac;

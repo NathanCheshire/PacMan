@@ -1,4 +1,5 @@
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 
 public class Ghost extends Node {
@@ -10,6 +11,9 @@ public class Ghost extends Node {
 
     //ghost types and our type
     private int type;
+
+    public static final Color pathColor = javafx.scene.paint.Color.rgb(204,153,0,0.8);
+    public static final Color pathableColor = javafx.scene.paint.Color.rgb(0,0,0,0);
 
     //ghost pictures
     public static final ImagePattern inkyImage = new ImagePattern(new Image("Inky.png"));

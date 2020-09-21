@@ -9,7 +9,7 @@ public class AStarPathFinding extends PathFinder {
 
     //graph is used for moving but we path find which one we should move to using a copy of it
     private static Node[][] graph;
-    private Node[][] localGraph;
+    private Node[][] pathfindingGraph;
     private static Pac pac;
     private Ghost controlGhost;
 
@@ -50,16 +50,25 @@ public class AStarPathFinding extends PathFinder {
     @Override
     public void refreshPath(Node[][] graph) {
         try {
+            resetPathColors();
             this.graph = graph;
+            pathfindingGraph = new Node[40][40];
+
+            for (int row = 0 ; row < 40 ; row++) {
+                for (int col = 0 ; col < 40 ; col++) {
+                    Node setMe = new Node(row,col);
+                    setMe.setNodeX(row);
+                    setMe.setNodeY(col);
+                    setMe.setNodeType(graph[row][col].getNodeType());
+                    pathfindingGraph[row][col] = setMe;
+                }
+            }
 
             int startX = controlGhost.getExactX();
             int startY = controlGhost.getExactY();
 
             int goalX = pac.getExactX();
             int goalY = pac.getExactY();
-
-            //first lets print our graph [r,c]
-            printGraph(graph);
 
             //todo 1: path find from (ghostX, ghostY) to (pacX, pacY).
             //todo 2: if theres a path, draw it from the edge of the ghost to the edge of pac man
@@ -69,17 +78,30 @@ public class AStarPathFinding extends PathFinder {
             PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
             PriorityQueue<Node> closed = new PriorityQueue<>(new NodeComparator());
 
-            //local graph init so that we can set parents and g costs without changing the main graph
-            localGraph = graph;
-            localGraph[startX][startY].setgCost(0);
-            open.add(localGraph[startX][startY]);
+            pathfindingGraph[startX][startY].setgCost(0);
+            open.add(pathfindingGraph[startX][startY]);
 
             while (!open.isEmpty()) {
                 Node min = open.poll();
 
-                if (min.getNodeX() == goalX && min.getNodeY() == goalY) {
+                if (min.getNodeX() == goalX && min.getNodeY() == goalY || nextTo(min.getNodeX(), min.getNodeY(), goalX, goalY)) {
                     System.out.println("Path found");
-                    //todo reconstruct path
+                    pathfindingGraph[goalX][goalY].setNodeParent(min);
+                    printGraph(graph);
+
+                    int x = pathfindingGraph[goalX][goalY].getNodeParent().getNodeX();
+                    int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
+
+                    while (x != startX || y != startY) {
+                        Controller.gameDrawRoot.getChildren().remove(graph[x][y]);
+                        graph[x][y].setFill(Ghost.pathColor);
+                        Controller.gameDrawRoot.getChildren().add(graph[x][y]);
+
+                        x = pathfindingGraph[x][y].getNodeParent().getNodeX();
+                        y = pathfindingGraph[x][y].getNodeParent().getNodeY();
+                    }
+
+
                     return;
                 }
 
@@ -87,19 +109,30 @@ public class AStarPathFinding extends PathFinder {
 
                 for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
                     for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
-                        if (i >= 0 && j >= 0 && i < 40 && j < 40 && localGraph[i][j].getNodeType() == Node.PATHABLE) {
-                            //valid neighbors are found here
-                            System.out.println("Neighbor for (" + min.getNodeX() + "," + min.getNodeY() + ") found: (" + i + "," + j + ")");
+                        if (i >= 0 && j >= 0 && i < 40 && j < 40 && pathfindingGraph[i][j].getNodeType() == Node.PATHABLE) {
 
-                            if (!contains(localGraph[i][j], open) && !contains(localGraph[i][j],closed)) {
-                                localGraph[i][j].setgCost(min.getGCost() + dist(min, localGraph[i][j]));
-                                localGraph[i][j].setNodeParent(min);
-                                open.add(localGraph[i][j]);
+                            //these if statements skip the corners
+                            if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
+                                continue;
+                            if (i == min.getNodeX() + 1 && j == min.getNodeY() + 1)
+                                continue;
+                            if (i == min.getNodeX() + 1 && j == min.getNodeY() - 1)
+                                continue;
+                            if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
+                                continue;
+
+                            if (!contains(pathfindingGraph[i][j], open) && !contains(pathfindingGraph[i][j],closed)) {
+                                pathfindingGraph[i][j].setgCost(min.getGCost() + dist(min, pathfindingGraph[i][j]));
+                                pathfindingGraph[i][j].setNodeParent(min);
+
+                                pathfindingGraph[i][j].setNodeX(i);
+                                pathfindingGraph[i][j].setNodeY(j);
+                                open.add(pathfindingGraph[i][j]);
                             }
 
-                            else if (min.getGCost() + dist(min, localGraph[i][j]) < localGraph[i][j].getGCost()) {
-                                localGraph[i][j].setgCost(min.getGCost() + dist(min, localGraph[i][j]));
-                                localGraph[i][j].setNodeParent(min);
+                            else if (min.getGCost() + dist(min, pathfindingGraph[i][j]) < pathfindingGraph[i][j].getGCost()) {
+                                pathfindingGraph[i][j].setgCost(min.getGCost() + dist(min, pathfindingGraph[i][j]));
+                                pathfindingGraph[i][j].setNodeParent(min);
                             }
                         }
                     }
@@ -178,5 +211,23 @@ public class AStarPathFinding extends PathFinder {
     //distance function for Nodes, max should be 56.56
     private double dist(Node one, Node two) {
         return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
+    }
+
+    private boolean nextTo(int x1, int y1, int x2, int y2) {
+        return (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1);
+    }
+
+    //todo this needs to be ghost specific somehow, maybe call it inside of game loop if showPaths is enabled?
+    private void resetPathColors() {
+        for (int row = 0 ; row < 40 ; row++) {
+            for (int col = 0 ; col < 40 ; col++) {
+                if (graph[row][col].getNodeType() == Node.PATHABLE) {
+                    Controller.gameDrawRoot.getChildren().remove(graph[row][col]);
+                    graph[row][col].setFill(Ghost.pathableColor);
+                    Controller.gameDrawRoot.getChildren().add(graph[row][col]);
+                }
+            }
+        }
+
     }
 }

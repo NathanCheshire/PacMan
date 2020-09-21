@@ -740,7 +740,7 @@ public class Controller {
     }
 
     private String isDead() {
-        if (inky != null) {
+        if (inky != null && inkyEnable.isSelected()) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == inky.getExactX() && pac.getExactY() == inky.getExactY()))
                 return "inky";
@@ -755,7 +755,7 @@ public class Controller {
                 return "inky";
         }
 
-        if (blinky != null) {
+        if (blinky != null && blinkyEnable.isSelected()) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == blinky.getExactX() && pac.getExactY() == blinky.getExactY()))
                 return "blinky";
@@ -770,7 +770,7 @@ public class Controller {
                 return "blinky";
         }
 
-        if (pinky != null) {
+        if (pinky != null && pinkyEnable.isSelected()) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == pinky.getExactX() && pac.getExactY() == pinky.getExactY()))
                 return "pinky";
@@ -785,7 +785,7 @@ public class Controller {
                 return "pinky";
         }
 
-        if (clyde != null) {
+        if (clyde != null && clydeEnable.isSelected()) {
             //left
             if (pac.getExactX() - 1 >= 0 && (pac.getExactX() - 1 == clyde.getExactX() && pac.getExactY() == clyde.getExactY()))
                 return "clyde";

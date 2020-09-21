@@ -50,7 +50,6 @@ public class AStarPathFinding extends PathFinder {
     @Override
     public void refreshPath(Node[][] graph) {
         try {
-            resetPathColors();
             this.graph = graph;
             pathfindingGraph = new Node[40][40];
 
@@ -70,10 +69,6 @@ public class AStarPathFinding extends PathFinder {
             int goalX = pac.getExactX();
             int goalY = pac.getExactY();
 
-            //todo 1: path find from (ghostX, ghostY) to (pacX, pacY).
-            //todo 2: if theres a path, draw it from the edge of the ghost to the edge of pac man
-            //todo 3: take a step in the right direction
-
             //open and closed queues so we do not check a node more than once for A*
             PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
             PriorityQueue<Node> closed = new PriorityQueue<>(new NodeComparator());
@@ -87,20 +82,12 @@ public class AStarPathFinding extends PathFinder {
                 if (min.getNodeX() == goalX && min.getNodeY() == goalY || nextTo(min.getNodeX(), min.getNodeY(), goalX, goalY)) {
                     System.out.println("Path found");
                     pathfindingGraph[goalX][goalY].setNodeParent(min);
-                    printGraph(graph);
+                    System.out.println(min);
 
-                    int x = pathfindingGraph[goalX][goalY].getNodeParent().getNodeX();
-                    int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
+                    //todo backtrack and figure out step that needs to be made DO THIS FIRST
 
-                    while (x != startX || y != startY) {
-                        Controller.gameDrawRoot.getChildren().remove(graph[x][y]);
-                        graph[x][y].setFill(Ghost.pathColor);
-                        Controller.gameDrawRoot.getChildren().add(graph[x][y]);
-
-                        x = pathfindingGraph[x][y].getNodeParent().getNodeX();
-                        y = pathfindingGraph[x][y].getNodeParent().getNodeY();
-                    }
-
+                    //todo this is the capture position
+                    System.out.println("Should move ghost to : " + pathfindingGraph[goalX][goalY].getNodeParent());
 
                     return;
                 }
@@ -121,6 +108,7 @@ public class AStarPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
+                            //todo fix pathfinding since it does not work given the displayed path
                             if (!contains(pathfindingGraph[i][j], open) && !contains(pathfindingGraph[i][j],closed)) {
                                 pathfindingGraph[i][j].setgCost(min.getGCost() + dist(min, pathfindingGraph[i][j]));
                                 pathfindingGraph[i][j].setNodeParent(min);
@@ -215,19 +203,5 @@ public class AStarPathFinding extends PathFinder {
 
     private boolean nextTo(int x1, int y1, int x2, int y2) {
         return (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1);
-    }
-
-    //todo this needs to be ghost specific somehow, maybe call it inside of game loop if showPaths is enabled?
-    private void resetPathColors() {
-        for (int row = 0 ; row < 40 ; row++) {
-            for (int col = 0 ; col < 40 ; col++) {
-                if (graph[row][col].getNodeType() == Node.PATHABLE) {
-                    Controller.gameDrawRoot.getChildren().remove(graph[row][col]);
-                    graph[row][col].setFill(Ghost.pathableColor);
-                    Controller.gameDrawRoot.getChildren().add(graph[row][col]);
-                }
-            }
-        }
-
     }
 }

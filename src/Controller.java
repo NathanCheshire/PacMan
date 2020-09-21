@@ -478,6 +478,17 @@ public class Controller {
             }
         }
 
+        //todo reset paths if they're shown, add condition for if checkbox is checked
+        for (int row = 0 ; row < 40 ; row++) {
+            for (int col = 0 ; col < 40 ; col++) {
+                if (grid[row][col].getNodeType() == Node.PATHABLE) {
+                    Controller.gameDrawRoot.getChildren().remove(grid[row][col]);
+                    grid[row][col].setFill(Ghost.pathableColor);
+                    Controller.gameDrawRoot.getChildren().add(grid[row][col]);
+                }
+            }
+        }
+
         if (inkyEnable.isSelected())
             inky.step(grid);
 

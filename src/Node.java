@@ -93,6 +93,7 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     public int getNodeType() { return this.nodeType; }
     public void setNodeType(int type) {
+        System.out.println("setting type to " + type);
         this.nodeType = type;
     }
 

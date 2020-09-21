@@ -45,7 +45,7 @@ public class Controller {
     private double yOffset = 0;
 
     //size of our grid 40x40 (0-39)
-    private static int size = 40;
+    private int size = 40;
 
     //our grid
     public static Node[][] grid;
@@ -118,24 +118,33 @@ public class Controller {
         startMouseUpdates();
 
         //init grid
+        System.out.println("here");
         grid = new Node[40][40];
         for (int i = 0 ; i < 40 ; i++) {
             for (int j = 0 ; j < 40 ; j++) {
                 grid[i][j] = new Node(i,j);
-                grid[i][j].setNodeType(Node.PATHABLE);
             }
         }
 
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
+            //todo copy from below
+        });
+
+        Main.primaryStage.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+
             try {
                 int xNode = (int) Math.round(xGame / 10.0);
                 int yNode = (int) Math.round(yGame / 10.0);
 
+                //todo when we update one node, we update the rest of them somehow like what the fuck
+
                 if (drawWallsMode && !gameRunning) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
+
                         if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
-                            //todo set to wall
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
+                            grid[xNode][yNode].setNodeType(Node.WALL);
+                            grid[xNode][yNode].setFill(javafx.scene.paint.Color.rgb(0,0,0,1));
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
                         }
                     }
@@ -143,12 +152,7 @@ public class Controller {
 
                 else if (!gameRunning && !drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
-                        if (grid[xNode][yNode].getNodeType() == Node.WALL) {
-                            //todo set to pathable
-                            gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
-                            gameDrawRoot.getChildren().add(grid[xNode][yNode]);
-                        }
-
+                        //remove wall
                     }
                 }
             }
@@ -156,10 +160,6 @@ public class Controller {
             catch (Exception e) {
                 e.printStackTrace();
             }
-        });
-
-        Main.primaryStage.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-            //todo copy from above
         });
 
         //initiate game pane

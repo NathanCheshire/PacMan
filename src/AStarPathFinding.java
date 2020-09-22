@@ -86,7 +86,6 @@ public class AStarPathFinding extends PathFinder {
             int goalY = pac.getExactY();
 
             PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
-            PriorityQueue<Node> closed = new PriorityQueue<>(new NodeComparator());
 
             pathfindingGraph[startX][startY].setgCost(0);
             pathfindingGraph[startX][startY].setHCost(dist(pathfindingGraph[startX][startY],pathfindingGraph[goalX][goalY]));
@@ -94,6 +93,9 @@ public class AStarPathFinding extends PathFinder {
 
             while (!open.isEmpty()) {
                 Node min = open.poll();
+                open.remove(min);
+
+                System.out.println("polled: " + min + " with costs g:" + min.getGCost() + " h:" + min.getHCost());
 
                 if (min.getNodeX() == goalX && min.getNodeY() == goalY || nextTo(min.getNodeX(), min.getNodeY(), goalX, goalY)) {
                     System.out.println("Path found");
@@ -125,9 +127,6 @@ public class AStarPathFinding extends PathFinder {
                     return;
                 }
 
-                open.remove(min);
-                closed.add(min);
-
                 for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
                     for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
                         if (i >= 0 && j >= 0 && i < 40 && j < 40 && pathfindingGraph[i][j].getNodeType() == Node.PATHABLE) {
@@ -140,8 +139,6 @@ public class AStarPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
-                            //this works except when you draw walls it goes through it and doesnt find the path
-
                             double newH = dist(pathfindingGraph[i][j], pathfindingGraph[goalX][goalY]);
 
                             if (newH < pathfindingGraph[i][j].getHCost()) {
@@ -152,6 +149,10 @@ public class AStarPathFinding extends PathFinder {
                                 if (!contains(pathfindingGraph[i][j], open))
                                     open.add(pathfindingGraph[i][j]);
                             }
+
+                            //todo what if not in grid
+                            //this is where the error of not finding a path around walls comes from
+                            //the algorithm doesn't want to look at nodes that have a higher score
                         }
                     }
                 }
@@ -213,13 +214,14 @@ public class AStarPathFinding extends PathFinder {
         return false;
     }
 
+    //todo change to h once you can path around walls and see what happens
     //priority queue based on how close the node is to the goal
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
-            if (node1.getHCost() > node2.getHCost())
+            if (node1.getFCost() > node2.getFCost())
                 return 1;
-            else if (node1.getHCost() < node2.getHCost())
+            else if (node1.getFCost() < node2.getFCost())
                 return -1;
             else
                 return 0;
@@ -228,15 +230,13 @@ public class AStarPathFinding extends PathFinder {
 
     //distance function for Nodes, max should be 56.56
     private double dist(Node one, Node two) {
+        if (one.getNodeX() == two.getNodeType() && one.getNodeY() == two.getNodeY()) return 0;
         return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
     }
 
     private boolean nextTo(int x1, int y1, int x2, int y2) {
         if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;
-        if (Math.abs(x1 - x2) == 0 && Math.abs(y1 - y2) == 1)
-            return true;
-
-        return false;
+        return Math.abs(x1 - x2) == 0 && Math.abs(y1 - y2) == 1;
     }
 }

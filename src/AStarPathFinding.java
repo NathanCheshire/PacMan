@@ -85,11 +85,11 @@ public class AStarPathFinding extends PathFinder {
             int goalX = pac.getExactX();
             int goalY = pac.getExactY();
 
-            //open and closed queues so we do not check a node more than once for A*
             PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
             PriorityQueue<Node> closed = new PriorityQueue<>(new NodeComparator());
 
             pathfindingGraph[startX][startY].setgCost(0);
+            pathfindingGraph[startX][startY].setHCost(dist(pathfindingGraph[startX][startY],pathfindingGraph[goalX][goalY]));
             open.add(pathfindingGraph[startX][startY]);
 
             while (!open.isEmpty()) {
@@ -98,11 +98,6 @@ public class AStarPathFinding extends PathFinder {
                 if (min.getNodeX() == goalX && min.getNodeY() == goalY || nextTo(min.getNodeX(), min.getNodeY(), goalX, goalY)) {
                     System.out.println("Path found");
                     pathfindingGraph[goalX][goalY].setNodeParent(min);
-                    System.out.println(min);
-
-                    //we're setting parents in pathfindingGrip[][] so go through that
-
-                    //so now we start at min coordinates which is next to pac and work our way back to the ghost
 
                     int x = pathfindingGraph[goalX][goalY].getNodeParent().getNodeX();
                     int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
@@ -119,49 +114,23 @@ public class AStarPathFinding extends PathFinder {
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
 
-                    if (startX == x && startY < y) {
-                        Controller.gameDrawRoot.getChildren().remove(graph[x][y - 1]);
-                        graph[x][y - 1].setFill(Ghost.pathColor);
-                        Controller.gameDrawRoot.getChildren().remove(graph[x][y - 1]);
+                    //todo color ends of path
 
-                        stepUp();
-                    }
+                    //todo cells get stuck at a certain color sometimes
 
-                    else if (startX == x && startY > y) {
-                        Controller.gameDrawRoot.getChildren().remove(graph[x][y + 1]);
-                        graph[x][y + 1].setFill(Ghost.pathColor);
-                        Controller.gameDrawRoot.getChildren().remove(graph[x][y  + 1]);
+                    //todo only let usre move at speed of game in game timer
 
-                        stepDown();
-                    }
-
-                    else if (startY == y && startX > x) {
-                        Controller.gameDrawRoot.getChildren().remove(graph[x - 1][y]);
-                        System.out.println(x - 1 + "," + y);
-                        graph[x - 1][y].setFill(Ghost.pathColor);
-                        Controller.gameDrawRoot.getChildren().remove(graph[x - 1][y]);
-
-                        stepLeft();
-                    }
-
-                    else if (startY == y && startX < x) {
-                        Controller.gameDrawRoot.getChildren().remove(graph[x + 1][y]);
-                        graph[x + 1][y].setFill(Ghost.pathColor);
-                        Controller.gameDrawRoot.getChildren().remove(graph[x + 1][y]);
-
-                        stepRight();
-                    }
+                    //todo take step
 
                     return;
                 }
 
+                open.remove(min);
                 closed.add(min);
 
                 for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
                     for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
                         if (i >= 0 && j >= 0 && i < 40 && j < 40 && pathfindingGraph[i][j].getNodeType() == Node.PATHABLE) {
-
-                            //these if statements skip the corners
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
                                 continue;
                             if (i == min.getNodeX() + 1 && j == min.getNodeY() + 1)
@@ -171,20 +140,17 @@ public class AStarPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
-                            //todo fix pathfinding since it does not work given the displayed path
-                            if (!contains(pathfindingGraph[i][j], open) && !contains(pathfindingGraph[i][j],closed)) {
-                                pathfindingGraph[i][j].setgCost(min.getGCost() + dist(min, pathfindingGraph[i][j]));
-                                pathfindingGraph[i][j].setNodeParent(min);
+                            //this works except when you draw walls it goes through it and doesnt find the path
 
-                                pathfindingGraph[i][j].setNodeX(i);
-                                pathfindingGraph[i][j].setNodeY(j);
-                                open.add(pathfindingGraph[i][j]);
-                            }
+                            double newH = dist(pathfindingGraph[i][j], pathfindingGraph[goalX][goalY]);
 
-                            else if (min.getGCost() + dist(min, pathfindingGraph[i][j]) < pathfindingGraph[i][j].getGCost()) {
-                                pathfindingGraph[i][j].setgCost(min.getGCost() + dist(min, pathfindingGraph[i][j]));
+                            if (newH < pathfindingGraph[i][j].getHCost()) {
+                                pathfindingGraph[i][j].setHCost(newH);
                                 pathfindingGraph[i][j].setNodeParent(min);
-                                open.add(pathfindingGraph[i][j]);
+                                pathfindingGraph[i][j].setgCost(min.getGCost() + dist(pathfindingGraph[i][j], min));
+
+                                if (!contains(pathfindingGraph[i][j], open))
+                                    open.add(pathfindingGraph[i][j]);
                             }
                         }
                     }
@@ -247,13 +213,13 @@ public class AStarPathFinding extends PathFinder {
         return false;
     }
 
-    //this comparator is a comp based on the Node's FCost
+    //priority queue based on how close the node is to the goal
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
-            if (node1.getGCost() > node2.getGCost())
+            if (node1.getHCost() > node2.getHCost())
                 return 1;
-            else if (node1.getGCost() < node2.getGCost())
+            else if (node1.getHCost() < node2.getHCost())
                 return -1;
             else
                 return 0;
@@ -266,9 +232,9 @@ public class AStarPathFinding extends PathFinder {
     }
 
     private boolean nextTo(int x1, int y1, int x2, int y2) {
-        if (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 0)
+        if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;
-        if (Math.abs(x1-x2) == 0 && Math.abs(y1-y2) == 1)
+        if (Math.abs(x1 - x2) == 0 && Math.abs(y1 - y2) == 1)
             return true;
 
         return false;

@@ -31,7 +31,7 @@ public class Node extends javafx.scene.shape.Rectangle {
     private static boolean visited;
 
     //used by A*
-    private static double hCost;
+    private static double hCost = Integer.MAX_VALUE;
     private static double gCost = Integer.MAX_VALUE;
 
     Node (int x, int y) {
@@ -104,8 +104,48 @@ public class Node extends javafx.scene.shape.Rectangle {
     public boolean isVisited() { return this.visited; }
     public void setVisited(boolean visited) { this.visited = visited; }
 
+    private String getTypeName() {
+        switch (nodeType) {
+//            public static final int WALL = 0;
+//            public static final int HAS_CHECKED = 1;
+//            public static final int TO_CHECK = 2;
+//            public static final int PATH = 3;
+//            public static final int PATHABLE = 4;
+//
+//            public static final int INKY = 5;
+//            public static final int BLINKY = 6;
+//            public static final int PINKY = 7;
+//            public static final int CLYDE = 8;
+//
+//            public static final int PAC = 9;
+
+            case 0:
+                return "wall";
+            case 1:
+                return "has checked";
+            case 2:
+                return "to check";
+            case 3:
+                return "path";
+            case 4:
+                return "pathable";
+            case 5:
+                return "inky";
+            case 6:
+                return "blinky";
+            case 7:
+                return "pinky";
+            case 8:
+                return "clyde";
+            case 9:
+                return "pac";
+        }
+
+        return "null";
+    }
+
     @Override
     public String toString() {
-        return ("[" + getNodeType() + ", (" + getNodeX() + "," + getNodeY() + ")" + "]");
+        return (getTypeName() + " is at (" + getNodeX() + "," + getNodeY() + ")");
     }
 }

@@ -110,6 +110,6 @@ public class Ghost extends Node {
 
     @Override
     public String toString() {
-        return "Ghost type: " + type + super.toString();
+        return getNameType() + " is at (" + getNodeX() + "," + getNodeY() + ")";
     }
 }

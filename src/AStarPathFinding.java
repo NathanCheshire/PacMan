@@ -118,7 +118,7 @@ public class AStarPathFinding extends PathFinder {
 
                     //todo cells get stuck at a certain color sometimes
 
-                    //todo only let usre move at speed of game in game timer
+                    //todo only let user move at speed of game in game timer
 
                     //todo take step
 
@@ -147,17 +147,12 @@ public class AStarPathFinding extends PathFinder {
                                 if (!contains(pathfindingGraph[i][j], open))
                                     open.add(pathfindingGraph[i][j]);
                             }
-
-                            //thinks it isn't in grid when it is
-                            //todo what if not in grid
-                            //this is where the error of not finding a path around walls comes from
-                            //the algorithm doesn't want to look at nodes that have a higher score
                         }
                     }
                 }
             }
 
-            System.out.println("No path found from (" + startX + "," + startY + ") to (" + goalX + "," + goalY + ")");
+            System.out.println("No path found from " + controlGhost + " to " + pac);
         }
 
         catch (Exception e) {

@@ -25,14 +25,14 @@ public class Node extends javafx.scene.shape.Rectangle {
     private Node parent;
 
     //used by dijkastras
-    private static double distance;
+    private double distance;
 
     //used by bfs
-    private static boolean visited;
+    private boolean visited;
 
     //used by A*
-    private static double hCost = Integer.MAX_VALUE;
-    private static double gCost = Integer.MAX_VALUE;
+    private double hCost = Integer.MAX_VALUE;
+    private double gCost = Integer.MAX_VALUE;
 
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);

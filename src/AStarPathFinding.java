@@ -1,13 +1,12 @@
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class AStarPathFinding extends PathFinder {
-    //g = node to start
-    //h = node to goal
-    //f = g + h
+    //todo add a feature to path through corners or not
+    //todo only show paths if the button is selected, constantly reget that value
+    //todo make sure line of sight is working and other hard mode features
+    //todo path finding for multiple ghosts is kind of buggy
 
-    //graph is used for moving but we path find which one we should move to using a copy of it
     private static Node[][] graph;
     private Node[][] pathfindingGraph;
     private static Pac pac;
@@ -114,13 +113,19 @@ public class AStarPathFinding extends PathFinder {
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
 
-                    //todo color ends of path
+                    Controller.showPath(x,y);
 
-                    //todo cells get stuck at a certain color sometimes
+                    if (startX == x && startY < y)
+                        stepDown();
 
-                    //todo only let user move at speed of game in game timer
+                    else if (startX == x && startY > y)
+                        stepUp();
 
-                    //todo take step
+                    else if (startY == y && startX > x)
+                        stepLeft();
+
+                    else if (startY == y && startX < x)
+                        stepRight();
 
                     return;
                 }
@@ -144,7 +149,7 @@ public class AStarPathFinding extends PathFinder {
                                 pathfindingGraph[i][j].setNodeParent(min);
                                 pathfindingGraph[i][j].setgCost(min.getGCost() + dist(pathfindingGraph[i][j], min));
 
-                                if (!contains(pathfindingGraph[i][j], open))
+                                if (!open.contains(pathfindingGraph[i][j]))
                                     open.add(pathfindingGraph[i][j]);
                             }
                         }
@@ -156,7 +161,7 @@ public class AStarPathFinding extends PathFinder {
         }
 
         catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Exception: " + e.getMessage());
         }
     }
 
@@ -164,7 +169,6 @@ public class AStarPathFinding extends PathFinder {
     private void printGraph(Node[][] NodeArr) {
         for (int col = 0 ; col < 40 ; col++) {
             for (int row = 0 ; row < 40 ; row++) {
-                //only go through nodes that are Node.PATHABLE
                 if (NodeArr[row][col].getNodeType() == Node.PATHABLE)
                     System.out.print("- ");
 
@@ -191,21 +195,6 @@ public class AStarPathFinding extends PathFinder {
         }
 
         System.out.println("\n\n\n");
-    }
-
-    //todo test and see if this is the same as .contains because it may very well be
-    //this method tests weather or not a priority queue has a node with the same coordinates
-    private boolean contains(Node testNode , PriorityQueue pq) {
-        Iterator<Node> iterator = pq.iterator();
-
-        while (iterator.hasNext()) {
-            Node compare = iterator.next();
-            if (compare.getNodeX() == testNode.getNodeX() && compare.getNodeY() == testNode.getNodeY()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     //this is properly setup

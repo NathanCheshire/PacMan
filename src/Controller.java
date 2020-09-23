@@ -101,7 +101,7 @@ public class Controller {
         //init ghost algorithms
         ArrayList<String> algorithms = new ArrayList<>();
         algorithms.add("BFS");
-        algorithms.add("Dijakstras");
+        algorithms.add("dijkastras");
         algorithms.add("A*");
         algorithmsList.addAll(algorithms);
         inkyChoice.getItems().addAll(algorithmsList);

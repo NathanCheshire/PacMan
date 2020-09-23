@@ -148,6 +148,7 @@ public class AStarPathFinding extends PathFinder {
                                     open.add(pathfindingGraph[i][j]);
                             }
 
+                            //thinks it isn't in grid when it is
                             //todo what if not in grid
                             //this is where the error of not finding a path around walls comes from
                             //the algorithm doesn't want to look at nodes that have a higher score
@@ -197,6 +198,7 @@ public class AStarPathFinding extends PathFinder {
         System.out.println("\n\n\n");
     }
 
+    //todo test and see if this is the same as .contains because it may very well be
     //this method tests weather or not a priority queue has a node with the same coordinates
     private boolean contains(Node testNode , PriorityQueue pq) {
         Iterator<Node> iterator = pq.iterator();
@@ -206,12 +208,12 @@ public class AStarPathFinding extends PathFinder {
             if (compare.getNodeX() == testNode.getNodeX() && compare.getNodeY() == testNode.getNodeY()) {
                 return true;
             }
-
         }
 
         return false;
     }
 
+    //this is properly setup
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {

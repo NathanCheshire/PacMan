@@ -478,16 +478,8 @@ public class Controller {
             }
         }
 
-        //todo reset paths if they're shown, add condition for if checkbox is checked
-        for (int row = 0 ; row < 40 ; row++) {
-            for (int col = 0 ; col < 40 ; col++) {
-                if (grid[row][col].getNodeType() == Node.PATHABLE) {
-                    Controller.gameDrawRoot.getChildren().remove(grid[row][col]);
-                    grid[row][col].setFill(Ghost.pathableColor);
-                    Controller.gameDrawRoot.getChildren().add(grid[row][col]);
-                }
-            }
-        }
+        resetPaths();
+
 
         if (inkyEnable.isSelected())
             inky.step(grid);
@@ -504,6 +496,25 @@ public class Controller {
         String dead = isDead();
         if (!dead.equals("null"))
             endGame(dead);
+    }
+
+    //use this to update a path from pathfinding classes
+    public static void showPath(int x, int y) {
+        gameDrawRoot.getChildren().remove(grid[x][y]);
+        grid[x][y].setFill(Ghost.pathColor);
+        gameDrawRoot.getChildren().add(grid[x][y]);
+    }
+
+    public void resetPaths() {
+        for (int row = 0 ; row < 40 ; row++) {
+            for (int col = 0 ; col < 40 ; col++) {
+                if (grid[row][col].getNodeType() == Node.PATHABLE) {
+                    Controller.gameDrawRoot.getChildren().remove(grid[row][col]);
+                    grid[row][col].setFill(Ghost.pathableColor);
+                    Controller.gameDrawRoot.getChildren().add(grid[row][col]);
+                }
+            }
+        }
     }
 
     private void startMouseUpdates() {

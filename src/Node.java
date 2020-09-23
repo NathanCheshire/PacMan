@@ -106,19 +106,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     private String getTypeName() {
         switch (nodeType) {
-//            public static final int WALL = 0;
-//            public static final int HAS_CHECKED = 1;
-//            public static final int TO_CHECK = 2;
-//            public static final int PATH = 3;
-//            public static final int PATHABLE = 4;
-//
-//            public static final int INKY = 5;
-//            public static final int BLINKY = 6;
-//            public static final int PINKY = 7;
-//            public static final int CLYDE = 8;
-//
-//            public static final int PAC = 9;
-
             case 0:
                 return "wall";
             case 1:

@@ -3,9 +3,9 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class AStarPathFinding extends PathFinder {
-    //g cost is distance from start node
-    //h cost is distance from end node
-    //f cost = g cost + h cost
+    //g = node to start
+    //h = node to goal
+    //f = g + h
 
     //graph is used for moving but we path find which one we should move to using a copy of it
     private static Node[][] graph;
@@ -105,9 +105,7 @@ public class AStarPathFinding extends PathFinder {
                     int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
 
                     while (!nextTo(x,y,startX,startY)) {
-                        Controller.gameDrawRoot.getChildren().remove(graph[x][y]);
-                        graph[x][y].setFill(Ghost.pathColor);
-                        Controller.gameDrawRoot.getChildren().add(graph[x][y]);
+                        Controller.showPath(x,y);
 
                         int copyX = x;
                         int copyY = y;
@@ -214,8 +212,6 @@ public class AStarPathFinding extends PathFinder {
         return false;
     }
 
-    //todo change to h once you can path around walls and see what happens
-    //priority queue based on how close the node is to the goal
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {

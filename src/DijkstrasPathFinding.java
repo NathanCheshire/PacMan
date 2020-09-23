@@ -1,35 +1,55 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class DijkstrasPathFinding extends PathFinder {
 
     private static Node[][] graph;
+    private Node[][] pathfindingGraph;
     private static Pac pac;
     private static Ghost controlGhost;
 
+    DijkstrasPathFinding(Node[][] graph, Pac pac, Ghost ghost) {
+        this.graph = graph;
+        this.pac = pac;
+        this.controlGhost = ghost;
+    }
+
     private void stepUp() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() - 1);
+        newNode.setNodeX(controlGhost.getExactX());
+        newNode.setNodeY(controlGhost.getExactY() - 1);
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
         controlGhost.setExactY(controlGhost.getExactY() - 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
     private void stepDown() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() + 1);
+        newNode.setNodeX(controlGhost.getExactX());
+        newNode.setNodeY(controlGhost.getExactY() + 1);
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateY(controlGhost.getTranslateY() + 10.0);
         controlGhost.setExactY(controlGhost.getExactY() + 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
     private void stepLeft() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX() - 1, controlGhost.getExactY());
+        newNode.setNodeX(controlGhost.getExactX() - 1);
+        newNode.setNodeY(controlGhost.getExactY());
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateX(controlGhost.getTranslateX() - 10.0);
         controlGhost.setExactX(controlGhost.getExactX() - 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
     private void stepRight() {
-        graph[controlGhost.getExactX()][controlGhost.getExactY()] = null;
+        Node newNode = new Node(controlGhost.getExactX() + 1, controlGhost.getExactY());
+        newNode.setNodeX(controlGhost.getExactX() + 1);
+        newNode.setNodeY(controlGhost.getExactY());
+
+        graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateX(controlGhost.getTranslateX() + 10.0);
         controlGhost.setExactX(controlGhost.getExactX() + 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
@@ -40,31 +60,26 @@ public class DijkstrasPathFinding extends PathFinder {
         this.graph = graph;
         System.out.println("Refreshing dijkastras path and stepping towards (" + pac.getExactX() + "," + pac.getExactY() + ")");
 
-        //path through null nodes until you get to pac if you can
-        //once you get to pac, use getParent to path all the way back to the ghost
-        //once at ghost figure out if the ghost's node's parent is up down left or right
-        //then call the corresponding step function
-    }
-
-    DijkstrasPathFinding(Node[][] graph, Pac pac, Ghost ghost) {
         this.graph = graph;
-        this.pac = pac;
-        this.controlGhost = ghost;
-    }
+        pathfindingGraph = new Node[40][40];
 
-    public List<Node> getNeighbors(Node node) {
-        List<Node> ret = new ArrayList<>();
-
-        for (int x = -1 + node.getNodeX(); x <= 1 + node.getNodeY() ; x++) {
-            for (int y = -1 + node.getNodeY(); y <= 1 + node.getNodeY() ; y++) {
-                if (x == 0 && y == 0)
-                    continue;
-                if (x > 0 && y > 0 && x < graph.length && y < graph.length)
-                    ret.add(graph[x][y]);
-
+        for (int row = 0 ; row < 40 ; row++) {
+            for (int col = 0 ; col < 40 ; col++) {
+                Node setMe = new Node(row,col);
+                setMe.setNodeX(row);
+                setMe.setNodeY(col);
+                setMe.setNodeType(graph[row][col].getNodeType());
+                pathfindingGraph[row][col] = setMe;
             }
         }
 
-        return ret;
+        int startX = controlGhost.getExactX();
+        int startY = controlGhost.getExactY();
+
+        int goalX = pac.getExactX();
+        int goalY = pac.getExactY();
+
+        //todo use pathfindingGrid to find path to goalX, goalY and raw it and take step
     }
+
 }

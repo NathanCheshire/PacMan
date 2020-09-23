@@ -37,8 +37,8 @@ public class Controller {
     private long speedUpCounter = 0;
 
     //checkbox booleans
-    public boolean hardModeEnable;
-    public boolean drawPathsEnable;
+    public static boolean hardModeEnable;
+    public static boolean drawPathsEnable;
 
     //used for dragging
     private double xOffset = 0;
@@ -478,9 +478,7 @@ public class Controller {
             }
         }
 
-        resetPaths();
-
-
+        //this is where the pathfinders are called
         if (inkyEnable.isSelected())
             inky.step(grid);
 
@@ -496,7 +494,15 @@ public class Controller {
         String dead = isDead();
         if (!dead.equals("null"))
             endGame(dead);
+
+        //remove all path colors
+        hidePaths();
+
+        hardModeEnable = hardModeCheck.isSelected();
+        drawPathsEnable = showPathsCheck.isSelected();
     }
+
+    //todo test straight sight death, other hard mode features, and add a death message for straight sight deaths
 
     //use this to update a path from pathfinding classes
     public static void showPath(int x, int y) {
@@ -505,16 +511,29 @@ public class Controller {
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
-    public void resetPaths() {
-        for (int row = 0 ; row < 40 ; row++) {
-            for (int col = 0 ; col < 40 ; col++) {
-                if (grid[row][col].getNodeType() == Node.PATHABLE) {
-                    Controller.gameDrawRoot.getChildren().remove(grid[row][col]);
-                    grid[row][col].setFill(Ghost.pathableColor);
-                    Controller.gameDrawRoot.getChildren().add(grid[row][col]);
-                }
-            }
-        }
+    public static void hidePath(int x, int y) {
+        gameDrawRoot.getChildren().remove(grid[x][y]);
+        grid[x][y].setFill(Ghost.pathableColor);
+        gameDrawRoot.getChildren().add(grid[x][y]);
+    }
+
+
+    //interesting: it clears all paths except the nodes it has visited maybe it thinks that the ghost is there too?
+    //todo ghosts don't get fast enough in hard mode but eveything else seems fine
+    //set all path colors back to pathable colors
+    public void hidePaths() {
+       for (int x = 0 ; x < 40 ; x++) {
+           for (int y = 0 ; y < 40 ; y++){
+               int type = grid[x][y].getNodeType();
+
+               if (type != Node.WALL && type != Node.PAC && type != Node.INKY &&
+                   type != Node.BLINKY && type != Node.PINKY && type != Node.CLYDE) {
+                   gameDrawRoot.getChildren().remove(grid[x][y]);
+                   grid[x][y] = new Node(x,y);
+                   gameDrawRoot.getChildren().add(grid[x][y]);
+               }
+           }
+       }
     }
 
     private void startMouseUpdates() {
@@ -620,7 +639,6 @@ public class Controller {
             clydeEnable.setDisable(false);
 
             drawWallsButton.setDisable(false);
-            showPathsCheck.setDisable(false);
             hardModeCheck.setDisable(false);
         }
 
@@ -649,7 +667,6 @@ public class Controller {
             clydeChoice.setDisable(true);
             
             drawWallsButton.setDisable(true);
-            showPathsCheck.setDisable(true);
             hardModeCheck.setDisable(true);
         }
     }
@@ -669,7 +686,6 @@ public class Controller {
         
         drawWallsButton.setDisable(true);
         hardModeCheck.setDisable(true);
-        showPathsCheck.setDisable(true);
 
         startButton.setDisable(true);
 
@@ -706,7 +722,6 @@ public class Controller {
 
         drawWallsButton.setDisable(false);
         hardModeCheck.setDisable(false);
-        showPathsCheck.setDisable(false);
 
         gameDrawRoot.getChildren().clear();
         pac = null;
@@ -727,17 +742,17 @@ public class Controller {
             gameDrawRoot.getChildren().add(lin);
         }
 
-        for (int i = 0 ; i < grid.length ; i++) {
-            for (int j = 0 ; j < grid[0].length ; j++) {
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
                 grid[i][j] = new Node(i,j);
                 grid[i][j].setNodeType(Node.PATHABLE);
             }
         }
 
         inkyChoice.setValue("A*");
-        blinkyChoice.setValue("A");
-        pinkyChoice.setValue("A");
-        clydeChoice.setValue("A");
+        blinkyChoice.setValue("A*");
+        pinkyChoice.setValue("A*");
+        clydeChoice.setValue("A*");
 
         inkyEnable.setSelected(true);
         blinkyEnable.setSelected(false);

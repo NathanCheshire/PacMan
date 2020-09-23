@@ -3,9 +3,9 @@ import java.util.PriorityQueue;
 
 public class AStarPathFinding extends PathFinder {
     //todo add a feature to path through corners or not
-    //todo only show paths if the button is selected, constantly reget that value
+    //todo only show paths if the button is selected, constantly refresh and check the checkbox
+    //todo paths are glitchy with multiple ghosts
     //todo make sure line of sight is working and other hard mode features
-    //todo path finding for multiple ghosts is kind of buggy
 
     private static Node[][] graph;
     private Node[][] pathfindingGraph;
@@ -62,6 +62,7 @@ public class AStarPathFinding extends PathFinder {
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
+
     @Override
     public void refreshPath(Node[][] graph) {
         try {
@@ -94,17 +95,15 @@ public class AStarPathFinding extends PathFinder {
                 Node min = open.poll();
                 open.remove(min);
 
-                System.out.println("polled: " + min + " with costs g:" + min.getGCost() + " h:" + min.getHCost());
-
                 if (min.getNodeX() == goalX && min.getNodeY() == goalY || nextTo(min.getNodeX(), min.getNodeY(), goalX, goalY)) {
-                    System.out.println("Path found");
                     pathfindingGraph[goalX][goalY].setNodeParent(min);
 
                     int x = pathfindingGraph[goalX][goalY].getNodeParent().getNodeX();
                     int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
 
                     while (!nextTo(x,y,startX,startY)) {
-                        Controller.showPath(x,y);
+                        if (Controller.drawPathsEnable)
+                            Controller.showPath(x,y);
 
                         int copyX = x;
                         int copyY = y;
@@ -113,7 +112,8 @@ public class AStarPathFinding extends PathFinder {
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
 
-                    Controller.showPath(x,y);
+                    if (Controller.drawPathsEnable)
+                        Controller.showPath(x,y);
 
                     if (startX == x && startY < y)
                         stepDown();

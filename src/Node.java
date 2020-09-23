@@ -6,8 +6,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     //node types and our nodeType
     public static final int WALL = 0;
-    public static final int HAS_CHECKED = 1;
-    public static final int TO_CHECK = 2;
     public static final int PATH = 3;
     public static final int PATHABLE = 4;
 

@@ -11,6 +11,12 @@ public class DijkstrasPathFinding extends PathFinder {
         this.controlGhost = ghost;
     }
 
+    @Override
+    public void refreshPath(Node[][] graph) {
+        this.graph = graph;
+        System.out.println("TODO: dijkastras");
+    }
+
     //todo just make a A* but pass in a heuristic of 1 (make 0 use dist and case 1 use 1)
     //once A* is working make a getHeuristic function but for dijkastras it will be 1 instead of dist(n1,n2)
 }

@@ -472,7 +472,7 @@ public class Controller {
             speedUpCounter += (gameTimeout / 1000000.0);
 
             if (speedUpCounter >= 10000) {
-                if (gameTimeout > 100000000)
+                if (gameTimeout >= 100000000)
                     gameTimeout -= 50000000;
                 speedUpCounter = 0;
             }
@@ -495,14 +495,9 @@ public class Controller {
         if (!dead.equals("null"))
             endGame(dead);
 
-        //remove all path colors
-        hidePaths();
-
         hardModeEnable = hardModeCheck.isSelected();
         drawPathsEnable = showPathsCheck.isSelected();
     }
-
-    //todo test straight sight death, other hard mode features, and add a death message for straight sight deaths
 
     //use this to update a path from pathfinding classes
     public static void showPath(int x, int y) {
@@ -515,25 +510,6 @@ public class Controller {
         gameDrawRoot.getChildren().remove(grid[x][y]);
         grid[x][y].setFill(Ghost.pathableColor);
         gameDrawRoot.getChildren().add(grid[x][y]);
-    }
-
-
-    //interesting: it clears all paths except the nodes it has visited maybe it thinks that the ghost is there too?
-    //todo ghosts don't get fast enough in hard mode but eveything else seems fine
-    //set all path colors back to pathable colors
-    public void hidePaths() {
-       for (int x = 0 ; x < 40 ; x++) {
-           for (int y = 0 ; y < 40 ; y++){
-               int type = grid[x][y].getNodeType();
-
-               if (type != Node.WALL && type != Node.PAC && type != Node.INKY &&
-                   type != Node.BLINKY && type != Node.PINKY && type != Node.CLYDE) {
-                   gameDrawRoot.getChildren().remove(grid[x][y]);
-                   grid[x][y] = new Node(x,y);
-                   gameDrawRoot.getChildren().add(grid[x][y]);
-               }
-           }
-       }
     }
 
     private void startMouseUpdates() {
@@ -605,20 +581,26 @@ public class Controller {
     }
 
     private void updateGameDrawRoot() {
-        gameDrawRoot.getChildren().removeAll(pac,inky,blinky,pinky,clyde);
-        gameDrawRoot.getChildren().add(pac);
 
-        if (inkyEnable.isSelected())
-            gameDrawRoot.getChildren().add(inky);
+        //todo if a ghost has been disabled, actually remove it from the board since right now ghosts can't path through a removed ghost
+        //and pac can't move through it either
 
-        if (blinkyEnable.isSelected())
-            gameDrawRoot.getChildren().add(blinky);
+        //interesting: it clears all paths except the nodes it has visited maybe it thinks that the ghost is there too?
+        //todo ghosts don't get fast enough in hard mode but eveything else seems fine
 
-        if (pinkyEnable.isSelected())
-            gameDrawRoot.getChildren().add(pinky);
+        //todo make it so that the path is gone from where they were and a line doesn't flow behind them
 
-        if (clydeEnable.isSelected())
-            gameDrawRoot.getChildren().add(clyde);
+        //set all path colors back to pathable colors
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
+                gameDrawRoot.getChildren().remove(grid[i][j]);
+
+                if (grid[i][j].getNodeType() == Node.PATHABLE)
+                    grid[i][j].setFill(Ghost.pathableColor);
+
+                gameDrawRoot.getChildren().add(grid[i][j]);
+            }
+        }
     }
 
     @FXML
@@ -672,7 +654,10 @@ public class Controller {
     }
 
     private void endGame(String name) {
-        System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
+        if (hardModeEnable)
+            System.out.println("You were killed since " + name + " saw you for 10 seconds, damn him!" + "\nPress reset to play again");
+        else
+            System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
         
         inkyEnable.setDisable(true);
         blinkyEnable.setDisable(true);

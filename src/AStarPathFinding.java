@@ -88,7 +88,7 @@ public class AStarPathFinding extends PathFinder {
             PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
 
             pathfindingGraph[startX][startY].setgCost(0);
-            pathfindingGraph[startX][startY].setHCost(dist(pathfindingGraph[startX][startY],pathfindingGraph[goalX][goalY]));
+            pathfindingGraph[startX][startY].setHCost(heuristic(pathfindingGraph[startX][startY],pathfindingGraph[goalX][goalY]));
             open.add(pathfindingGraph[startX][startY]);
 
             while (!open.isEmpty()) {
@@ -142,12 +142,12 @@ public class AStarPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
-                            double newH = dist(pathfindingGraph[i][j], pathfindingGraph[goalX][goalY]);
+                            double newH = heuristic(pathfindingGraph[i][j], pathfindingGraph[goalX][goalY]);
 
                             if (newH < pathfindingGraph[i][j].getHCost()) {
                                 pathfindingGraph[i][j].setHCost(newH);
                                 pathfindingGraph[i][j].setNodeParent(min);
-                                pathfindingGraph[i][j].setgCost(min.getGCost() + dist(pathfindingGraph[i][j], min));
+                                pathfindingGraph[i][j].setgCost(min.getGCost() + heuristic(pathfindingGraph[i][j], min));
 
                                 if (!open.contains(pathfindingGraph[i][j]))
                                     open.add(pathfindingGraph[i][j]);
@@ -208,6 +208,11 @@ public class AStarPathFinding extends PathFinder {
             else
                 return 0;
         }
+    }
+
+    //this should return 1 for dijkastra's
+    private double heuristic(Node one, Node two) {
+        return dist(one, two);
     }
 
     //distance function for Nodes, max should be 56.56

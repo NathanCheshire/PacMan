@@ -14,6 +14,8 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int PINKY = 7;
     public static final int CLYDE = 8;
 
+    public static final Color wallColor = javafx.scene.paint.Color.rgb(0,0,0,1);
+
     public static final int PAC = 9;
 
     //default nodeType is pathable

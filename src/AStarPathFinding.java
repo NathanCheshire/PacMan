@@ -1,5 +1,4 @@
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class AStarPathFinding extends PathFinder {
@@ -15,6 +14,9 @@ public class AStarPathFinding extends PathFinder {
     }
 
     private void stepUp() {
+        int refreshX = controlGhost.getExactX();
+        int refreshY = controlGhost.getExactY();
+
         Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() - 1);
         newNode.setNodeX(controlGhost.getExactX());
         newNode.setNodeY(controlGhost.getExactY() - 1);
@@ -23,9 +25,16 @@ public class AStarPathFinding extends PathFinder {
         controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
         controlGhost.setExactY(controlGhost.getExactY() - 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+
+        Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
+        graph[refreshX][refreshY] = new Node(refreshX, refreshY);
+        Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
     private void stepDown() {
+        int refreshX = controlGhost.getExactX();
+        int refreshY = controlGhost.getExactY();
+
         Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() + 1);
         newNode.setNodeX(controlGhost.getExactX());
         newNode.setNodeY(controlGhost.getExactY() + 1);
@@ -34,9 +43,16 @@ public class AStarPathFinding extends PathFinder {
         controlGhost.setTranslateY(controlGhost.getTranslateY() + 10.0);
         controlGhost.setExactY(controlGhost.getExactY() + 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+
+        Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
+        graph[refreshX][refreshY] = new Node(refreshX, refreshY);
+        Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
     private void stepLeft() {
+        int refreshX = controlGhost.getExactX();
+        int refreshY = controlGhost.getExactY();
+
         Node newNode = new Node(controlGhost.getExactX() - 1, controlGhost.getExactY());
         newNode.setNodeX(controlGhost.getExactX() - 1);
         newNode.setNodeY(controlGhost.getExactY());
@@ -45,9 +61,16 @@ public class AStarPathFinding extends PathFinder {
         controlGhost.setTranslateX(controlGhost.getTranslateX() - 10.0);
         controlGhost.setExactX(controlGhost.getExactX() - 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+
+        Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
+        graph[refreshX][refreshY] = new Node(refreshX, refreshY);
+        Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
     private void stepRight() {
+        int refreshX = controlGhost.getExactX();
+        int refreshY = controlGhost.getExactY();
+
         Node newNode = new Node(controlGhost.getExactX() + 1, controlGhost.getExactY());
         newNode.setNodeX(controlGhost.getExactX() + 1);
         newNode.setNodeY(controlGhost.getExactY());
@@ -56,6 +79,10 @@ public class AStarPathFinding extends PathFinder {
         controlGhost.setTranslateX(controlGhost.getTranslateX() + 10.0);
         controlGhost.setExactX(controlGhost.getExactX() + 1);
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
+
+        Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
+        graph[refreshX][refreshY] = new Node(refreshX, refreshY);
+        Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
     @Override
@@ -98,14 +125,12 @@ public class AStarPathFinding extends PathFinder {
                             Controller.showPath(x,y);
                         }
 
-
                         int copyX = x;
                         int copyY = y;
 
                         x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
-
 
                     if (startX == x && startY < y)
                         stepDown();

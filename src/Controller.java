@@ -423,7 +423,7 @@ public class Controller {
     }
 
     private void update() {
-        updateGameDrawRoot();
+        repaintGame();
 
         if (hardModeEnable) {
             if (inky != null) {
@@ -497,6 +497,52 @@ public class Controller {
 
         hardModeEnable = hardModeCheck.isSelected();
         drawPathsEnable = showPathsCheck.isSelected();
+    }
+
+    //todo where a ghost has BEEN not at is not replaced
+    //todo if a ghost has been disabled, actually remove it from the board since right now ghosts can't path through a removed ghost
+    //todo make it so that the path is gone from where they were and a line doesn't flow behind them
+
+//    for (int i = 0 ; i <= 400 ; i += 10) {
+//        Line lin = new Line(i,0,i,400);
+//        lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+//        gameDrawRoot.getChildren().add(lin);
+//    }
+//
+//        for (int i = 0 ; i <= 400 ; i += 10) {
+//        Line lin = new Line(0,i,400,i);
+//        lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+//        gameDrawRoot.getChildren().add(lin);
+//    }
+//
+//        gameAnchorPane.getChildren().add(gameDrawRoot);
+
+
+    private void repaintGame() {
+        gameDrawRoot.getChildren().clear();
+
+        for (int i = 0 ; i <= 400 ; i += 10) {
+            Line lin = new Line(i,0,i,400);
+            lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+            gameDrawRoot.getChildren().add(lin);
+        }
+
+        for (int i = 0 ; i <= 400 ; i += 10) {
+            Line lin = new Line(0,i,400,i);
+            lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+            gameDrawRoot.getChildren().add(lin);
+        }
+
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
+                gameDrawRoot.getChildren().remove(grid[i][j]);
+
+                if (grid[i][j].getNodeType() == Node.PATHABLE)
+                    grid[i][j].setFill(Ghost.pathableColor);
+
+                gameDrawRoot.getChildren().add(grid[i][j]);
+            }
+        }
     }
 
     //use this to update a path from pathfinding classes
@@ -577,29 +623,6 @@ public class Controller {
         else {
             drawWallsMode = !drawWallsMode;
             drawWallsButton.setText("Walls: Remove");
-        }
-    }
-
-    private void updateGameDrawRoot() {
-
-        //todo if a ghost has been disabled, actually remove it from the board since right now ghosts can't path through a removed ghost
-        //and pac can't move through it either
-
-        //interesting: it clears all paths except the nodes it has visited maybe it thinks that the ghost is there too?
-        //todo ghosts don't get fast enough in hard mode but eveything else seems fine
-
-        //todo make it so that the path is gone from where they were and a line doesn't flow behind them
-
-        //set all path colors back to pathable colors
-        for (int i = 0 ; i < 40 ; i++) {
-            for (int j = 0 ; j < 40 ; j++) {
-                gameDrawRoot.getChildren().remove(grid[i][j]);
-
-                if (grid[i][j].getNodeType() == Node.PATHABLE)
-                    grid[i][j].setFill(Ghost.pathableColor);
-
-                gameDrawRoot.getChildren().add(grid[i][j]);
-            }
         }
     }
 

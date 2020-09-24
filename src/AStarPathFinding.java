@@ -1,12 +1,8 @@
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class AStarPathFinding extends PathFinder {
-    //todo add a feature to path through corners or not
-    //todo only show paths if the button is selected, constantly refresh and check the checkbox
-    //todo paths are glitchy with multiple ghosts
-    //todo make sure line of sight is working and other hard mode features
-
     private static Node[][] graph;
     private Node[][] pathfindingGraph;
     private static Pac pac;
@@ -62,7 +58,6 @@ public class AStarPathFinding extends PathFinder {
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = controlGhost;
     }
 
-
     @Override
     public void refreshPath(Node[][] graph) {
         try {
@@ -82,28 +77,27 @@ public class AStarPathFinding extends PathFinder {
             int startX = controlGhost.getExactX();
             int startY = controlGhost.getExactY();
 
-            int goalX = pac.getExactX();
-            int goalY = pac.getExactY();
-
             PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
 
             pathfindingGraph[startX][startY].setgCost(0);
-            pathfindingGraph[startX][startY].setHCost(heuristic(pathfindingGraph[startX][startY],pathfindingGraph[goalX][goalY]));
+            pathfindingGraph[startX][startY].setHCost(heuristic(pathfindingGraph[startX][startY],pathfindingGraph[pac.getExactX()][pac.getExactY()]));
             open.add(pathfindingGraph[startX][startY]);
 
             while (!open.isEmpty()) {
                 Node min = open.poll();
                 open.remove(min);
 
-                if (min.getNodeX() == goalX && min.getNodeY() == goalY || nextTo(min.getNodeX(), min.getNodeY(), goalX, goalY)) {
-                    pathfindingGraph[goalX][goalY].setNodeParent(min);
+                if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
+                    pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
 
-                    int x = pathfindingGraph[goalX][goalY].getNodeParent().getNodeX();
-                    int y = pathfindingGraph[goalX][goalY].getNodeParent().getNodeY();
+                    int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
+                    int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
 
                     while (!nextTo(x,y,startX,startY)) {
-                        if (Controller.drawPathsEnable)
+                        if (Controller.drawPathsEnable) {
                             Controller.showPath(x,y);
+                        }
+
 
                         int copyX = x;
                         int copyY = y;
@@ -112,8 +106,6 @@ public class AStarPathFinding extends PathFinder {
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
 
-                    if (Controller.drawPathsEnable)
-                        Controller.showPath(x,y);
 
                     if (startX == x && startY < y)
                         stepDown();
@@ -142,7 +134,7 @@ public class AStarPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
-                            double newH = heuristic(pathfindingGraph[i][j], pathfindingGraph[goalX][goalY]);
+                            double newH = heuristic(pathfindingGraph[i][j], pathfindingGraph[pac.getExactX()][pac.getExactY()]);
 
                             if (newH < pathfindingGraph[i][j].getHCost()) {
                                 pathfindingGraph[i][j].setHCost(newH);

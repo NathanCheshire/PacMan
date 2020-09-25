@@ -25,8 +25,15 @@ public class Node extends javafx.scene.shape.Rectangle {
     //used by both
     private Node parent;
 
-    //used by dijkastras
+    //used by dijkastras and bfs
     private double distance;
+
+    //used by maze generator;
+    public boolean mazeVisited;
+    public boolean north;
+    public boolean south;
+    public boolean east;
+    public boolean west;
 
     //used by bfs
     private boolean visited;

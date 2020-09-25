@@ -20,6 +20,7 @@ import javafx.scene.shape.Line;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Controller {
@@ -67,6 +68,10 @@ public class Controller {
 
     //the pane we can add children to such as nodes, ghosts, and pacman
     public static Pane gameDrawRoot;
+
+    //maze generation linked lists
+    private LinkedList<Node> maze = new LinkedList<>();
+    private LinkedList<Node> walls = new LinkedList<>();
 
     //mouse vars
     private double xGame;
@@ -136,7 +141,6 @@ public class Controller {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
                             grid[xNode][yNode].setNodeType(Node.WALL);
                             gameDrawRoot.getChildren().add(grid[xNode][yNode]);
-
                         }
                     }
                 }
@@ -454,8 +458,7 @@ public class Controller {
         }
     }
 
-    //todo if pac did not move since last pathfinding update, we don't need to redraw the path, this will speed it up too
-    //todo implement breadth-first-search
+    //todo is BFS right?
     //todo random maze button: https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_Mazes.cpp
 
     private boolean straightSight(int startX, int startY, int goalX, int goalY) {
@@ -987,7 +990,7 @@ public class Controller {
             return;
         }
 
-        //todo errors here with refreshing shown paths
+        repaintGame();
 
         if (inky != null && !gameRunning)
             inky.step(grid,true);
@@ -1003,8 +1006,46 @@ public class Controller {
             endGame(dead);
     }
 
+    private void setWall(int x, int y) {
+        if (x > 40 || y > 40 || x < 0 || y < 0)
+            return;
+
+        gameDrawRoot.getChildren().remove(grid[x][y]);
+        grid[x][y].setNodeType(Node.WALL);
+        gameDrawRoot.getChildren().add(grid[x][y]);
+    }
+
+    private void setPathable(int x, int y) {
+        if (x > 40 || y > 40 || x < 0 || y < 0)
+            return;
+
+        gameDrawRoot.getChildren().remove(grid[x][y]);
+        grid[x][y].setNodeType(Node.PATHABLE);
+        gameDrawRoot.getChildren().add(grid[x][y]);
+    }
+
+    //todo can't start game if over 80% of grid are walls
+
     @FXML
     public void drawMaze(ActionEvent event) {
-        System.out.println("todo: draw a maze");
+        resetGame(event);
+        System.out.println("Generating 40x40 maze");
+
+        walls.clear();
+        maze.clear();
+
+        //Start with a grid full of walls.
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
+                setWall(i,j);
+                walls.add(grid[i][j]);
+            }
+        }
+
+        Node current = grid[17][17];
+        current.mazeVisited = true;
+        setWall(current.getNodeX(), current.getNodeY());
+
+
     }
 }

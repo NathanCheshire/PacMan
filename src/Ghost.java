@@ -70,8 +70,8 @@ public class Ghost extends Node {
         return this.position;
     }
 
-    public void step(Node[][] graph) {
-        pathFinder.refreshPath(graph);
+    public void step(Node[][] graph, boolean move) {
+        pathFinder.refreshPath(graph, move);
     }
 
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

@@ -103,7 +103,7 @@ public class Controller {
         //init ghost algorithms
         ArrayList<String> algorithms = new ArrayList<>();
         algorithms.add("BFS");
-        algorithms.add("dijkastras");
+        algorithms.add("Dijkstras");
         algorithms.add("A*");
         algorithmsList.addAll(algorithms);
         inkyChoice.getItems().addAll(algorithmsList);
@@ -193,19 +193,60 @@ public class Controller {
 
         for (int i = 0 ; i <= 400 ; i += 10) {
             Line lin = new Line(i,0,i,400);
-            lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+            lin.setStroke(Node.lineColor);
             gameAnchorPane.getChildren().add(lin);
         }
 
         for (int i = 0 ; i <= 400 ; i += 10) {
             Line lin = new Line(0,i,400,i);
-            lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+            lin.setStroke(Node.lineColor);
             gameAnchorPane.getChildren().add(lin);
         }
 
         gameAnchorPane.getChildren().add(gameDrawRoot);
     }
 
+    @FXML
+    public void inkyEnableHandle(ActionEvent e) {
+        if (inky != null) {
+            grid[inky.getExactX()][inky.getExactY()] = new Node(inky.getExactX(), inky.getExactY());
+            grid[inky.getExactX()][inky.getExactY()].setFill(Ghost.pathableColor);
+            inky = null;
+        }
+    }
+
+    @FXML
+    public void blinkyEnableHandle(ActionEvent e) {
+        if (blinky != null) {
+            gameDrawRoot.getChildren().remove(grid[blinky.getExactX()][blinky.getExactY()]);
+            grid[blinky.getExactX()][blinky.getExactY()] = new Node(blinky.getExactX(), blinky.getExactY());
+            grid[blinky.getExactX()][blinky.getExactY()].setFill(Ghost.pathableColor);
+            gameDrawRoot.getChildren().add(grid[blinky.getExactX()][blinky.getExactY()]);
+            blinky = null;
+        }
+    }
+
+    @FXML
+    public void pinkyEnableHandle(ActionEvent e) {
+        if (pinky != null) {
+            gameDrawRoot.getChildren().remove( grid[pinky.getExactX()][pinky.getExactY()]);
+            grid[pinky.getExactX()][pinky.getExactY()] = new Node(pinky.getExactX(), pinky.getExactY());
+            grid[pinky.getExactX()][pinky.getExactY()].setFill(Ghost.pathableColor);
+            gameDrawRoot.getChildren().add( grid[pinky.getExactX()][pinky.getExactY()]);
+            pinky = null;
+        }
+    }
+
+    @FXML
+    public void clydeEnableHandle(ActionEvent e) {
+        if (clyde != null) {
+            gameDrawRoot.getChildren().remove(grid[clyde.getExactX()][clyde.getExactY()]);
+            grid[clyde.getExactX()][clyde.getExactY()] = new Node(clyde.getExactX(), clyde.getExactY());
+            grid[clyde.getExactX()][clyde.getExactY()].setFill(Ghost.pathableColor);
+            gameDrawRoot.getChildren().add(grid[clyde.getExactX()][clyde.getExactY()]);
+            clyde = null;
+        }
+    }
 
     public void startGameLoop() {
         hardModeEnable = hardModeCheck.isSelected();
@@ -413,6 +454,10 @@ public class Controller {
         }
     }
 
+    //todo if pac did not move since last pathfinding update, we don't need to redraw the path, this will speed it up too
+    //todo implement breadth-first-search
+    //todo random maze button: https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_Mazes.cpp
+
     private boolean straightSight(int startX, int startY, int goalX, int goalY) {
         if (startX == goalX) {
             int miny = Math.min(startY, goalY) + 1;
@@ -502,16 +547,16 @@ public class Controller {
 
         //this is where the pathfinders are called
         if (inkyEnable.isSelected())
-            inky.step(grid);
+            inky.step(grid, true);
 
         if (blinkyEnable.isSelected())
-            blinky.step(grid);
+            blinky.step(grid, true);
 
         if (pinkyEnable.isSelected())
-            pinky.step(grid);
+            pinky.step(grid, true);
 
         if (clydeEnable.isSelected())
-            clyde.step(grid);
+            clyde.step(grid, true);
 
         String dead = isDead();
         if (!dead.equals("null"))
@@ -765,13 +810,13 @@ public class Controller {
 
         for (int i = 0 ; i <= 400 ; i += 10) {
             Line lin = new Line(i,0,i,400);
-            lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+            lin.setStroke(Node.lineColor);
             gameDrawRoot.getChildren().add(lin);
         }
 
         for (int i = 0 ; i <= 400 ; i += 10) {
             Line lin = new Line(0,i,400,i);
-            lin.setStroke(javafx.scene.paint.Color.rgb(0,0,0));
+            lin.setStroke(Node.lineColor);
             gameDrawRoot.getChildren().add(lin);
         }
 
@@ -807,6 +852,23 @@ public class Controller {
     @FXML
     private void close_app(MouseEvent e) {
         System.exit(0);
+    }
+
+    @FXML
+    private void showPathsHandler(ActionEvent e) {
+        if (showPathsCheck.isSelected()) {
+            if (inky != null)
+                inky.step(grid,false);
+            if (blinky != null)
+                blinky.step(grid,false);
+            if (pinky != null)
+                pinky.step(grid,false);
+            if (clyde != null)
+                clyde.step(grid,false);
+        }
+
+        else
+            repaintGame();
     }
 
     private String isDead() {
@@ -913,4 +975,36 @@ public class Controller {
             }
         }
     };
+
+    @FXML
+    public Button createMazeButton;
+    public Button advanceButton;
+
+    @FXML
+    public void step(ActionEvent event) {
+        if (!inkyEnable.isSelected() && !blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected()) {
+            System.out.println("Must have at least one ghost enabled");
+            return;
+        }
+
+        //todo errors here with refreshing shown paths
+
+        if (inky != null && !gameRunning)
+            inky.step(grid,true);
+        if (blinky != null && !gameRunning)
+            blinky.step(grid,true);
+        if (pinky != null && !gameRunning)
+            pinky.step(grid,true);
+        if (clyde != null && !gameRunning)
+            clyde.step(grid,true);
+
+        String dead = isDead();
+        if (!dead.equals("null"))
+            endGame(dead);
+    }
+
+    @FXML
+    public void drawMaze(ActionEvent event) {
+        System.out.println("todo: draw a maze");
+    }
 }

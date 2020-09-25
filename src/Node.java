@@ -14,7 +14,8 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int PINKY = 7;
     public static final int CLYDE = 8;
 
-    public static final Color wallColor = javafx.scene.paint.Color.rgb(0,0,0,1);
+    public static final Color wallColor = javafx.scene.paint.Color.rgb(26,40,70,1);
+    public static final Color lineColor = javafx.scene.paint.Color.rgb(0,0,0,1);
 
     public static final int PAC = 9;
 
@@ -95,7 +96,7 @@ public class Node extends javafx.scene.shape.Rectangle {
         this.nodeType = type;
 
         if (type == Node.WALL)
-            this.setFill(Color.rgb(0, 0, 0,1));
+            this.setFill(Node.wallColor);
 
         else if (type == Node.PATH)
             this.setFill(Color.rgb(0, 0, 0,0));

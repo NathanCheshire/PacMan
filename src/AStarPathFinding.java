@@ -86,7 +86,7 @@ public class AStarPathFinding extends PathFinder {
     }
 
     @Override
-    public void refreshPath(Node[][] graph) {
+    public void refreshPath(Node[][] graph, boolean move) {
         try {
             this.graph = graph;
             pathfindingGraph = new Node[40][40];
@@ -132,17 +132,19 @@ public class AStarPathFinding extends PathFinder {
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
 
-                    if (startX == x && startY < y)
-                        stepDown();
+                    if (move) {
+                        if (startX == x && startY < y)
+                            stepDown();
 
-                    else if (startX == x && startY > y)
-                        stepUp();
+                        else if (startX == x && startY > y)
+                            stepUp();
 
-                    else if (startY == y && startX > x)
-                        stepLeft();
+                        else if (startY == y && startX > x)
+                            stepLeft();
 
-                    else if (startY == y && startX < x)
-                        stepRight();
+                        else if (startY == y && startX < x)
+                            stepRight();
+                    }
 
                     return;
                 }

@@ -20,8 +20,8 @@ import javafx.scene.shape.Line;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
+import java.util.Stack;
 
 public class Controller {
     //game animation timer
@@ -70,9 +70,7 @@ public class Controller {
     public static Pane gameDrawRoot;
 
     //maze generation linked lists
-    private LinkedList<Node> maze = new LinkedList<>();
-    private LinkedList<Node> walls = new LinkedList<>();
-
+    private Stack<Node> mazeStack = new Stack<>();
     //mouse vars
     private double xGame;
     private double yGame;
@@ -305,7 +303,6 @@ public class Controller {
 
 
             while (grid[inkyX][inkyY].getNodeType() != Node.PATHABLE) {
-                System.out.println(grid[inkyX][inkyY].getNodeType());
                 inkyX = rn.nextInt(40);
                 inkyY = rn.nextInt(40);
             }
@@ -457,9 +454,6 @@ public class Controller {
             tim.start();
         }
     }
-
-    //todo is BFS right?
-    //todo random maze button: https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_Mazes.cpp
 
     private boolean straightSight(int startX, int startY, int goalX, int goalY) {
         if (startX == goalX) {
@@ -701,6 +695,21 @@ public class Controller {
 
     @FXML
     private void startGame(ActionEvent e) {
+        int total = 40 * 40;
+        int wallNum = 0;
+
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
+                if (grid[i][j].getNodeType() == Node.WALL)
+                    wallNum++;
+            }
+        }
+
+        if (((double) wallNum / (double) total) >= 0.69) {
+            System.out.println("Too many walls on the grid! Please remove some so that you don't overwork the poor ghosts!");
+            return;
+        }
+
         if (gameRunning) {
             System.out.println("Stoping Game");
             startButton.setText("Start Game");
@@ -773,6 +782,8 @@ public class Controller {
         Main.primaryStage.removeEventFilter(KeyEvent.KEY_PRESSED, pacMovement);
 
         tim.stop();
+
+        pac = null;
     }
 
     @FXML
@@ -990,6 +1001,9 @@ public class Controller {
             return;
         }
 
+        if (pac == null)
+            return;
+
         repaintGame();
 
         if (inky != null && !gameRunning)
@@ -1009,9 +1023,9 @@ public class Controller {
     private void setWall(int x, int y) {
         if (x > 40 || y > 40 || x < 0 || y < 0)
             return;
-
         gameDrawRoot.getChildren().remove(grid[x][y]);
         grid[x][y].setNodeType(Node.WALL);
+        grid[x][y].setFill(Ghost.wallColor);
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
@@ -1021,31 +1035,31 @@ public class Controller {
 
         gameDrawRoot.getChildren().remove(grid[x][y]);
         grid[x][y].setNodeType(Node.PATHABLE);
+        grid[x][y].setFill(Ghost.pathableColor);
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
-    //todo can't start game if over 80% of grid are walls
-
+    //this function uses backtracking so I thought it was applicable for this class and thus this project
     @FXML
     public void drawMaze(ActionEvent event) {
         resetGame(event);
-        System.out.println("Generating 40x40 maze");
 
-        walls.clear();
-        maze.clear();
+        char[][] maze = (new MazeGenerator()).getMaze(40);
 
-        //Start with a grid full of walls.
         for (int i = 0 ; i < 40 ; i++) {
             for (int j = 0 ; j < 40 ; j++) {
-                setWall(i,j);
-                walls.add(grid[i][j]);
+                if (maze[i][j] == '0')
+                    setPathable(i,j);
+                else
+                    setWall(i,j);
             }
         }
 
-        Node current = grid[17][17];
-        current.mazeVisited = true;
-        setWall(current.getNodeX(), current.getNodeY());
-
-
+        for (int i = 0 ; i < 40 ; i++) {
+            for (int j = 0 ; j < 40 ; j++) {
+                if (i == 0 || j == 0 || i == 39 || j == 39)
+                    setPathable(i,j);
+            }
+        }
     }
 }

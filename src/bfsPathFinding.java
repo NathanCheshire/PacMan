@@ -6,9 +6,6 @@ public class bfsPathFinding extends PathFinder {
     private static Pac pac;
     private Ghost controlGhost;
 
-    private int lastPacX = Integer.MAX_VALUE;
-    private int lastPacY = Integer.MAX_VALUE;
-
     bfsPathFinding(Node[][] graph, Pac pac, Ghost controlGhost) {
         this.graph = graph;
         this.pac = pac;
@@ -93,12 +90,6 @@ public class bfsPathFinding extends PathFinder {
             this.graph = graph;
             pathfindingGraph = new Node[40][40];
 
-            int oldX = lastPacX;
-            int oldY = lastPacY;
-
-            lastPacX = pac.getNodeX();
-            lastPacY = pac.getNodeY();
-
             for (int row = 0 ; row < 40 ; row++) {
                 for (int col = 0 ; col < 40 ; col++) {
                     Node setMe = new Node(row,col);
@@ -122,11 +113,6 @@ public class bfsPathFinding extends PathFinder {
                 open.remove(min);
 
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
-                    if (oldX == lastPacX && oldY == lastPacY) {
-                        //todo
-                        System.out.println("TODO: pac didn't move so don't update path");
-                    }
-
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
 
                     int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();

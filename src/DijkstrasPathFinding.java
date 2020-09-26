@@ -1,7 +1,8 @@
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-class DijkstrasPathFinding extends PathFinder {
+public class DijkstrasPathFinding extends PathFinder {
     private static Node[][] graph;
     private Node[][] pathfindingGraph;
     private static Pac pac;
@@ -180,7 +181,7 @@ class DijkstrasPathFinding extends PathFinder {
         }
 
         catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

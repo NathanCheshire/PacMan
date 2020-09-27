@@ -465,7 +465,7 @@ public class Controller {
                     return false;
                 miny++;
             }
-
+            System.out.println("yes");
             return true;
         }
 
@@ -479,7 +479,7 @@ public class Controller {
 
                 minx++;
             }
-
+            System.out.println("yes");
             return true;
         }
 
@@ -580,9 +580,13 @@ public class Controller {
             }
         }
 
-        gameDrawRoot.getChildren().remove(grid[pac.getNodeX()][pac.getNodeY()]);
-        grid[pac.getNodeX()][pac.getNodeY()].setFill(new ImagePattern(new Image("Pac.png")));
-        gameDrawRoot.getChildren().add(grid[pac.getNodeX()][pac.getNodeY()]);
+        if (pac != null) {
+            gameDrawRoot.getChildren().remove(grid[pac.getNodeX()][pac.getNodeY()]);
+            grid[pac.getNodeX()][pac.getNodeY()].setFill(new ImagePattern(new Image("Pac.png")));
+            gameDrawRoot.getChildren().add(grid[pac.getNodeX()][pac.getNodeY()]);
+        }
+
+
 
         if (inky != null) {
             gameDrawRoot.getChildren().remove(grid[inky.getNodeX()][inky.getNodeY()]);

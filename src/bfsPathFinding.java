@@ -130,8 +130,6 @@ public class bfsPathFinding extends PathFinder {
                         y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                     }
 
-                    System.out.println("ghost " + startX + "," + startY + " move: " + x + "," + y);
-
                     if (move) {
                         if (startX == x && startY < y)
                             stepDown();

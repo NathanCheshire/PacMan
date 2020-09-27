@@ -149,7 +149,24 @@ public class bfsPathFinding extends PathFinder {
 
                 for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
                     for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
-                        if (i >= 0 && j >= 0 && i < 40 && j < 40 && pathfindingGraph[i][j].getNodeType() == Node.PATHABLE) {
+                        if (i < 0 || j < 0 || i > 39 || j > 39)
+                            continue;
+
+                        int type = pathfindingGraph[i][j].getNodeType();
+                        boolean typeChecksOut = false;
+
+                        if (type == Node.CLYDE)
+                            typeChecksOut = true;
+                        if (type == Node.INKY)
+                            typeChecksOut = true;
+                        if (type == Node.BLINKY)
+                            typeChecksOut = true;
+                        if (type == Node.PINKY)
+                            typeChecksOut = true;
+                        if (type == Node.PATHABLE)
+                            typeChecksOut = true;
+
+                        if (typeChecksOut) {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
                                 continue;
                             if (i == min.getNodeX() + 1 && j == min.getNodeY() + 1)

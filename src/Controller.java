@@ -618,6 +618,9 @@ public class Controller {
         if (x == pac.getNodeX() && y == pac.getNodeY())
             return;
 
+        if (grid[x][y].getNodeType() != Node.PATHABLE)
+            return;
+
         gameDrawRoot.getChildren().remove(grid[x][y]);
         grid[x][y].setFill(Ghost.pathColor);
         gameDrawRoot.getChildren().add(grid[x][y]);

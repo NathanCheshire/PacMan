@@ -108,15 +108,14 @@ public class bfsPathFinding extends PathFinder {
 
             LinkedList<Node> open = new LinkedList<>();
             pathfindingGraph[startX][startY].setVisited(true);
-            pathfindingGraph[startX][startY].setDistance(0);
             open.add(pathfindingGraph[startX][startY]);
 
             while (!open.isEmpty()) {
-                Node min = open.poll();
-                open.remove(min);
+                Node polledNode = open.poll();
+                open.remove(polledNode);
 
-                if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
-                    pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
+                if (polledNode.getNodeX() == pac.getExactX() && polledNode.getNodeY() == pac.getExactY() || nextTo(polledNode.getNodeX(), polledNode.getNodeY(), pac.getExactX(), pac.getExactY())) {
+                    pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(polledNode);
 
                     int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
                     int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
@@ -150,8 +149,8 @@ public class bfsPathFinding extends PathFinder {
                     return;
                 }
 
-                for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
-                    for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
+                for (int i = polledNode.getNodeX() - 1 ; i < polledNode.getNodeX() + 2 ; i++) {
+                    for (int j = polledNode.getNodeY() - 1 ; j < polledNode.getNodeY() + 2 ; j++) {
                         if (i < 0 || j < 0 || i > 39 || j > 39)
                             continue;
 
@@ -170,19 +169,18 @@ public class bfsPathFinding extends PathFinder {
                             typeChecksOut = true;
 
                         if (typeChecksOut) {
-                            if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
+                            if (i == polledNode.getNodeX() - 1 && j == polledNode.getNodeY() - 1)
                                 continue;
-                            if (i == min.getNodeX() + 1 && j == min.getNodeY() + 1)
+                            if (i == polledNode.getNodeX() + 1 && j == polledNode.getNodeY() + 1)
                                 continue;
-                            if (i == min.getNodeX() + 1 && j == min.getNodeY() - 1)
+                            if (i == polledNode.getNodeX() + 1 && j == polledNode.getNodeY() - 1)
                                 continue;
-                            if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
+                            if (i == polledNode.getNodeX() - 1 && j == polledNode.getNodeY() + 1)
                                 continue;
 
                             if (!pathfindingGraph[i][j].isVisited()) {
                                 pathfindingGraph[i][j].setVisited(true);
-                                pathfindingGraph[i][j].setNodeParent(min);
-                                pathfindingGraph[i][j].setDistance(min.getDistance() + 1);
+                                pathfindingGraph[i][j].setNodeParent(polledNode);
                                 open.add(pathfindingGraph[i][j]);
                             }
                         }

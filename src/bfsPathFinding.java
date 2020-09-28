@@ -228,17 +228,6 @@ public class bfsPathFinding extends PathFinder {
         System.out.println("\n\n\n");
     }
 
-    //this should return 1 for dijkastra's
-    private double heuristic(Node one, Node two) {
-        return dist(one, two);
-    }
-
-    //distance function for Nodes, max should be 56.56
-    private double dist(Node one, Node two) {
-        if (one.getNodeX() == two.getNodeType() && one.getNodeY() == two.getNodeY()) return 0;
-        return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
-    }
-
     private boolean nextTo(int x1, int y1, int x2, int y2) {
         if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;

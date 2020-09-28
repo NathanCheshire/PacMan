@@ -141,6 +141,6 @@ public class Node extends javafx.scene.shape.Rectangle {
 
     @Override
     public String toString() {
-        return (getTypeName() + " is at (" + getNodeX() + "," + getNodeY() + ")");
+        return (getTypeName() + " at (" + getNodeX() + "," + getNodeY() + ")");
     }
 }

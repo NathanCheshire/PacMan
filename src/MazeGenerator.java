@@ -5,31 +5,29 @@ public class MazeGenerator {
     MazeGenerator() {}
 
     public char[][] getMaze(int size) {
-        int r = size;
-        int c = size;
+        int xDimension = size;
+        int yDimension = size;
 
-        StringBuilder s = new StringBuilder(c);
+        StringBuilder s = new StringBuilder(yDimension);
 
-        for (int x = 0; x < c; x++)
-            s.append('1');
+        for (int x = 0; x < yDimension; x++)
+            s.append('1'); //wall
 
-        char[][] maz = new char[r][c];
+        char[][] maze = new char[xDimension][yDimension];
 
-        for (int x = 0; x < r; x++)
-            maz[x] = s.toString().toCharArray();
+        for (int x = 0; x < xDimension; x++)
+            maze[x] = s.toString().toCharArray();
 
-        Point st = new Point((int)(Math.random() * r), (int)(Math.random() * c), null);
-
-        maz[st.r][st.c] = '0';
-
-        ArrayList < Point > frontier = new ArrayList<>();
+        Point start = new Point((int)(Math.random() * xDimension), (int)(Math.random() * yDimension), null);
+        maze[start.x][start.y] = '0';
+        ArrayList <Point> front = new ArrayList<>();
 
         for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 1; y++) {
                 if (x == 0 && y == 0 || x != 0 && y != 0)
                     continue;
                 try {
-                    if (maz[st.r + x][st.c + y] == '0')
+                    if (maze[start.x + x][start.y + y] == '0')
                         continue;
                 }
 
@@ -37,20 +35,20 @@ public class MazeGenerator {
                     continue;
                 }
 
-                frontier.add(new Point(st.r + x, st.c + y, st));
+                front.add(new Point(start.x + x, start.y + y, start));
             }
 
         Point last = null;
 
-        while (!frontier.isEmpty()) {
-            Point cu = frontier.remove((int)(Math.random() * frontier.size()));
+        while (!front.isEmpty()) {
+            Point cu = front.remove((int)(Math.random() * front.size()));
             Point op = cu.opposite();
 
             try {
-                if (maz[cu.r][cu.c] == '1') {
-                    if (maz[op.r][op.c] == '1') {
-                        maz[cu.r][cu.c] = '0';
-                        maz[op.r][op.c] = '0';
+                if (maze[cu.x][cu.y] == '1') {
+                    if (maze[op.x][op.y] == '1') {
+                        maze[cu.x][cu.y] = '0';
+                        maze[op.x][op.y] = '0';
 
                         last = op;
 
@@ -59,14 +57,14 @@ public class MazeGenerator {
                                 if (x == 0 && y == 0 || x != 0 && y != 0)
                                     continue;
                                 try {
-                                    if (maz[op.r + x][op.c + y] == '0') continue;
+                                    if (maze[op.x + x][op.y + y] == '0') continue;
                                 }
 
                                 catch (Exception e) {
                                     continue;
                                 }
 
-                                frontier.add(new Point(op.r + x, op.c + y, op));
+                                front.add(new Point(op.x + x, op.y + y, op));
                             }
                     }
                 }
@@ -74,32 +72,32 @@ public class MazeGenerator {
 
             catch (Exception ignored) {}
 
-            if (frontier.isEmpty())
-                maz[last.r][last.c] = '0';
+            if (front.isEmpty())
+                maze[last.x][last.y] = '0';
 
         }
 
-        return maz;
+        return maze;
     }
 
     private class Point {
-        Integer r;
-        Integer c;
+        Integer x;
+        Integer y;
         Point parent;
 
         public Point(int x, int y, Point p) {
-            r = x;
-            c = y;
+            this.x = x;
+            this.y = y;
             parent = p;
         }
 
         public Point opposite() {
-            if (this.r.compareTo(parent.r) != 0)
-                return new Point(this.r + this.r.compareTo(parent.r), this.c, this);
+            if (this.x.compareTo(parent.x) != 0)
+                return new Point(this.x + this.x.compareTo(parent.x), this.y, this);
 
-            if (this.c.compareTo(parent.c) != 0)
+            if (this.y.compareTo(parent.y) != 0)
 
-                return new Point(this.r, this.c + this.c.compareTo(parent.c), this);
+                return new Point(this.x, this.y + this.y.compareTo(parent.y), this);
             return null;
         }
     }

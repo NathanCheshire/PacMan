@@ -84,6 +84,9 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+
+    //search algorithm pseudocode that was followed was taken directly from slides
+    //anything is is game checks or necessary to make it work in this (Pac-Man) context.
     @Override
     public void refreshPath(Node[][] graph, boolean move) {
         try {

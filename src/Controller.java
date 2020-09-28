@@ -465,7 +465,6 @@ public class Controller {
                     return false;
                 miny++;
             }
-            System.out.println("yes");
             return true;
         }
 
@@ -479,7 +478,6 @@ public class Controller {
 
                 minx++;
             }
-            System.out.println("yes");
             return true;
         }
 
@@ -1051,14 +1049,14 @@ public class Controller {
     public void drawMaze(ActionEvent event) {
         resetGame(event);
 
-        char[][] maze = (new MazeGenerator()).getMaze(40);
+        char[][] maze = (new MazeGenerator()).getMaze(42);
 
-        for (int i = 0 ; i < 40 ; i++) {
-            for (int j = 0 ; j < 40 ; j++) {
+        for (int i = 1 ; i < 41 ; i++) {
+            for (int j = 1 ; j < 41 ; j++) {
                 if (maze[i][j] == '0')
-                    setPathable(i,j);
+                    setPathable(i - 1,j - 1);
                 else
-                    setWall(i,j);
+                    setWall(i - 1,j - 1);
             }
         }
 

@@ -23,6 +23,16 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
+//future features I plan to add/fix-----------------------------------
+//todo fix issue where a ghost is moving through a path and isn't properly drawn outside the path
+//todo switch algorithm mid game
+//todo fix drawing paths when game stopped and checkbox checked
+//todo fix death message trigger in hardmode (path to 10 second death even if not true)
+//todo make all ghosts purple and use A* no matter what in hard mode
+//todo start ghosts faster in hardmode and decrease 10 to 5
+//todo put ghosts at least 15 distance away from pac
+//--------------------------------------------------------------------
+
 public class Controller {
     //game animation timer
     private AnimationTimer tim;
@@ -85,6 +95,8 @@ public class Controller {
 
     @FXML
     private HBox dragLabel;
+    public Button createMazeButton;
+    public Button advanceButton;
 
     @FXML
     public void initialize() {
@@ -118,16 +130,20 @@ public class Controller {
         clydeChoice.getItems().addAll(algorithmsList);
         clydeChoice.getSelectionModel().select(2);
 
+        //at least one ghost must be enabled
         inkyEnable.setSelected(true);
 
+        //used to draw walls
         startMouseUpdates();
 
+        //init grid
         grid = new Node[40][40];
 
         for (int i = 0 ; i < 40 ; i++)
             for (int j = 0 ; j < 40 ; j++)
                 grid[i][j] = new Node(i,j);
 
+        //draw wall to grid
         Main.primaryStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             try {
                 int xNode = (int) Math.round(xGame / 10.0);
@@ -191,8 +207,10 @@ public class Controller {
             }
         });
 
+        //main game drawing root
         gameDrawRoot = new Pane();
 
+        //add dashed lines to our gameDrawRoot
         for (int i = 0 ; i <= 400 ; i += 10) {
             Line lin = new Line(i,0,i,400);
             lin.setStroke(Node.lineColor);
@@ -207,6 +225,8 @@ public class Controller {
 
         gameAnchorPane.getChildren().add(gameDrawRoot);
     }
+
+    //the following methods handle when a ghost is selected/deselected
 
     @FXML
     public void inkyEnableHandle(ActionEvent e) {
@@ -250,12 +270,15 @@ public class Controller {
         }
     }
 
+    //called when start is pressed
     public void startGameLoop() {
+        //get options
         hardModeEnable = hardModeCheck.isSelected();
         drawPathsEnable = showPathsCheck.isSelected();
 
         Random rn = new Random();
 
+        //init selected ghosts
         if (!inkyEnable.isSelected() && inky != null) {
             grid[inky.getExactX()][inky.getExactY()] = new Node(inky.getExactX(), inky.getExactY());
             inky = null;
@@ -276,6 +299,7 @@ public class Controller {
             clyde = null;
         }
 
+        //put path on board
         if (pac == null) {
             pac = new Pac(0, 0);
 
@@ -295,6 +319,7 @@ public class Controller {
             pac.setExactY(pacY);
         }
 
+        //figure out where to put ghosts
         if (inkyEnable.isSelected() && inky == null) {
             inky = new Ghost(0, 0,Ghost.INKY);
 
@@ -432,8 +457,10 @@ public class Controller {
             }
         }
 
+        //init movement for pac
         Main.primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, pacMovement);
 
+        //start game timer or refresh gameDrawRoot
         if (tim == null) {
             tim = new AnimationTimer() {
                 private long lastUp = 0;
@@ -455,6 +482,7 @@ public class Controller {
         }
     }
 
+    //can a ghost see pac?
     private boolean straightSight(int startX, int startY, int goalX, int goalY) {
         if (startX == goalX) {
             int miny = Math.min(startY, goalY) + 1;
@@ -487,6 +515,7 @@ public class Controller {
     private void update() {
         repaintGame();
 
+        //if it's hard mode, speed up ghosts or kill pac depending in input
         if (hardModeEnable) {
             if (inky != null) {
                 if (nsecondsInkySeen / 10.0  == 500000000)
@@ -561,6 +590,7 @@ public class Controller {
         drawPathsEnable = showPathsCheck.isSelected();
     }
 
+    //updates gameDrawRoot walls, pathable nodes, pac, and ghsots
     private void repaintGame() {
         gameDrawRoot.getChildren().clear();
 
@@ -583,8 +613,6 @@ public class Controller {
             grid[pac.getNodeX()][pac.getNodeY()].setFill(new ImagePattern(new Image("Pac.png")));
             gameDrawRoot.getChildren().add(grid[pac.getNodeX()][pac.getNodeY()]);
         }
-
-
 
         if (inky != null) {
             gameDrawRoot.getChildren().remove(grid[inky.getNodeX()][inky.getNodeY()]);
@@ -624,12 +652,14 @@ public class Controller {
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
+    //removes a path color from draw root
     public static void hidePath(int x, int y) {
         gameDrawRoot.getChildren().remove(grid[x][y]);
         grid[x][y].setFill(Ghost.pathableColor);
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
+    //get mouse location used for drawing walls
     private void startMouseUpdates() {
         Task<Void> task = new Task<>() {
             @Override
@@ -685,6 +715,7 @@ public class Controller {
     @FXML
     private CheckBox hardModeCheck;
 
+    //toggle button for drawing walls
     @FXML
     private void drawWalls(ActionEvent e) {
         if (!drawWallsMode) {
@@ -698,11 +729,13 @@ public class Controller {
         }
     }
 
+    //start game for the first time or resume it
     @FXML
     private void startGame(ActionEvent e) {
         int total = 40 * 40;
         int wallNum = 0;
 
+        //make sure there aren't too many walls
         for (int i = 0 ; i < 40 ; i++) {
             for (int j = 0 ; j < 40 ; j++) {
                 if (grid[i][j].getNodeType() == Node.WALL)
@@ -715,6 +748,7 @@ public class Controller {
             return;
         }
 
+        //stop game
         if (gameRunning) {
             System.out.println("Stoping Game");
             startButton.setText("Start Game");
@@ -734,6 +768,7 @@ public class Controller {
             hardModeCheck.setDisable(false);
         }
 
+        //start/restart a paused game
         else {
             if (!inkyEnable.isSelected() && !blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected()) {
                 System.out.println("Must have at least one ghost enabled");
@@ -763,9 +798,11 @@ public class Controller {
         }
     }
 
+    //freeze game and don't let a resume happen
     private void endGame(String name) {
         if (hardModeEnable)
-            System.out.println("You were killed since " + name + " saw you for 10 seconds, damn him!" + "\nPress reset to play again");
+            //todo were they killed by sight?
+            System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
         else
             System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
         
@@ -791,6 +828,7 @@ public class Controller {
         pac = null;
     }
 
+    //reset to defaults
     @FXML
     private void resetGame(ActionEvent e) {
         System.out.println("Reset Game");
@@ -873,6 +911,7 @@ public class Controller {
         System.exit(0);
     }
 
+    //handler for when show paths checkbox is toggled
     @FXML
     private void showPathsHandler(ActionEvent e) {
         if (showPathsCheck.isSelected()) {
@@ -890,6 +929,7 @@ public class Controller {
             repaintGame();
     }
 
+    //checks if a ghost is next to pac, could optimize this method using the nextTo method
     private String isDead() {
         if (inky != null && inkyEnable.isSelected()) {
             //left
@@ -954,6 +994,7 @@ public class Controller {
         return "null";
     }
 
+    //movement for pacman
     private EventHandler<KeyEvent> pacMovement = new EventHandler<>() {
         @Override
         public void handle(KeyEvent keyEvent) {
@@ -995,10 +1036,8 @@ public class Controller {
         }
     };
 
-    @FXML
-    public Button createMazeButton;
-    public Button advanceButton;
 
+    //used to increment game step by step
     @FXML
     public void step(ActionEvent event) {
         if (!inkyEnable.isSelected() && !blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected()) {
@@ -1006,11 +1045,14 @@ public class Controller {
             return;
         }
 
+        //if game has not been started, don't do anything
         if (pac == null)
             return;
 
+        //redraw game
         repaintGame();
 
+        //move each enabled ghost as long as the game is not running
         if (inky != null && !gameRunning)
             inky.step(grid,true);
         if (blinky != null && !gameRunning)
@@ -1020,11 +1062,13 @@ public class Controller {
         if (clyde != null && !gameRunning)
             clyde.step(grid,true);
 
+        //check for death
         String dead = isDead();
         if (!dead.equals("null"))
             endGame(dead);
     }
 
+    //sets a game node to a wall
     private void setWall(int x, int y) {
         if (x > 40 || y > 40 || x < 0 || y < 0)
             return;
@@ -1034,6 +1078,7 @@ public class Controller {
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
+    //sets a game node to pathable
     private void setPathable(int x, int y) {
         if (x > 40 || y > 40 || x < 0 || y < 0)
             return;

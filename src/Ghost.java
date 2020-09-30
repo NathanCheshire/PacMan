@@ -24,9 +24,11 @@ public class Ghost extends Node {
 
     private int x;
     private int y;
-    
+
+    //pathfinder is abstract so that we don't have to specify a specific type
     private PathFinder pathFinder;
 
+    //constructor inits ghost type too
     Ghost(int x, int y, int type) {
         super((x) * 10,(y) * 10);
 
@@ -54,6 +56,8 @@ public class Ghost extends Node {
                 break;
         }
     }
+
+    //regular getters and setters--------------------------------------------------------------
 
     public int getNodeType() {
         return this.type;
@@ -89,6 +93,7 @@ public class Ghost extends Node {
         return this.x;
     }
 
+    //return string representation of ghost type
     public String getNameType() {
         switch(type) {
             case Ghost.INKY:

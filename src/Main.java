@@ -8,10 +8,12 @@ import javafx.stage.StageStyle;
 
 public class Main extends Application {
 
+    //used for UI/game draw updates
     public static Stage primaryStage;
     public static Parent root;
     public static Scene primaryScene;
 
+    //basic Java FXML main setup, see controller for brains of program
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;

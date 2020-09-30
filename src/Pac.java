@@ -1,11 +1,15 @@
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 
+//extend node class so that we can draw it to gameDrawRoot
 public class Pac extends Node {
+
+    //position and x,y object vars (position is static since it can be)
     private static Node position;
     private int x;
     private int y;
 
+    //constructor to init position and position on draw pane
     Pac(int x, int y) {
         super(x * 10,y * 10);
         this.position = new Node(x,y);
@@ -13,6 +17,9 @@ public class Pac extends Node {
         this.y = y;
         this.setFill(new ImagePattern(new Image("Pac.png")));
     }
+
+    //basic getters and setters-------------------------------
+
 
     public Node getPosition() {
         return this.position;

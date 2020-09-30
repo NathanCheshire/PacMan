@@ -1,8 +1,6 @@
 import java.util.*;
 
-//uses Prim's Algorithm
-//https://en.wikipedia.org/wiki/Prim%27s_algorithm
-//pseudocode gathered from: https://en.wikipedia.org/wiki/Maze_generation_algorithm
+
 public class MazeGenerator {
 
     MazeGenerator() {}

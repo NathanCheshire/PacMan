@@ -2,17 +2,23 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class AStarPathFinding extends PathFinder {
+
+    //for updating our drawn graph
     private static Node[][] graph;
+
+    //for conducting local path finding on
     private Node[][] pathfindingGraph;
     private static Pac pac;
     private Ghost controlGhost;
 
+    //regular constructor
     AStarPathFinding(Node[][] graph, Pac pac, Ghost controlGhost) {
         this.graph = graph;
         this.pac = pac;
         this.controlGhost = controlGhost;
     }
 
+    //take a step up
     private void stepUp() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -31,6 +37,7 @@ public class AStarPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //take a step down
     private void stepDown() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -49,6 +56,7 @@ public class AStarPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //take a step left
     private void stepLeft() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -67,6 +75,7 @@ public class AStarPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //take a step right
     private void stepRight() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -110,10 +119,12 @@ public class AStarPathFinding extends PathFinder {
             pathfindingGraph[startX][startY].setHCost(heuristic(pathfindingGraph[startX][startY],pathfindingGraph[pac.getExactX()][pac.getExactY()]));
             open.add(pathfindingGraph[startX][startY]);
 
+            //while priority queue is not empty
             while (!open.isEmpty()) {
                 Node min = open.poll();
                 open.remove(min);
 
+                //if goal, draw path and step in right direction
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
 
@@ -149,6 +160,7 @@ public class AStarPathFinding extends PathFinder {
                     return;
                 }
 
+                //for valid enighbors
                 for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
                     for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
                         if (i < 0 || j < 0 || i > 39 || j > 39)
@@ -168,6 +180,7 @@ public class AStarPathFinding extends PathFinder {
                         if (type == Node.PATHABLE)
                             typeChecksOut = true;
 
+                        //if pathable
                         if (typeChecksOut) {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
                                 continue;
@@ -178,13 +191,16 @@ public class AStarPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
+                            //calculate new H
                             double newH = heuristic(pathfindingGraph[i][j], pathfindingGraph[pac.getExactX()][pac.getExactY()]);
 
+                            //if new H is better, update information
                             if (newH < pathfindingGraph[i][j].getHCost()) {
                                 pathfindingGraph[i][j].setHCost(newH);
                                 pathfindingGraph[i][j].setNodeParent(min);
                                 pathfindingGraph[i][j].setgCost(min.getGCost() + heuristic(pathfindingGraph[i][j], min));
 
+                                //if not in queue, add it
                                 if (!open.contains(pathfindingGraph[i][j]))
                                     open.add(pathfindingGraph[i][j]);
                             }
@@ -193,6 +209,7 @@ public class AStarPathFinding extends PathFinder {
                 }
             }
 
+            //if here then there was no path
             System.out.println("No path found from " + controlGhost + " to " + pac);
         }
 
@@ -257,6 +274,7 @@ public class AStarPathFinding extends PathFinder {
         return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
     }
 
+    //is one node next to another node
     private boolean nextTo(int x1, int y1, int x2, int y2) {
         if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;

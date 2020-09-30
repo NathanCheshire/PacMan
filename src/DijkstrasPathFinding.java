@@ -2,17 +2,23 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class DijkstrasPathFinding extends PathFinder {
+
+    //graph to update
     private static Node[][] graph;
+
+    //local graph for path finding
     private Node[][] pathfindingGraph;
     private static Pac pac;
     private Ghost controlGhost;
 
+    //constructor
     DijkstrasPathFinding(Node[][] graph, Pac pac, Ghost controlGhost) {
         this.graph = graph;
         this.pac = pac;
         this.controlGhost = controlGhost;
     }
 
+    //move ghost up
     private void stepUp() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -31,6 +37,7 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //move ghost down
     private void stepDown() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -49,6 +56,7 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //move ghost left
     private void stepLeft() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -67,6 +75,7 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //move ghost right
     private void stepRight() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -110,10 +119,12 @@ public class DijkstrasPathFinding extends PathFinder {
             pathfindingGraph[startX][startY].setHCost(heuristic(pathfindingGraph[startX][startY],pathfindingGraph[pac.getExactX()][pac.getExactY()]));
             open.add(pathfindingGraph[startX][startY]);
 
+            //while nodes in queue
             while (!open.isEmpty()) {
                 Node min = open.poll();
                 open.remove(min);
 
+                //if we found a path draw it and step in the direction
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
 
@@ -149,6 +160,7 @@ public class DijkstrasPathFinding extends PathFinder {
                     return;
                 }
 
+                //for valid neighbors
                 for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
                     for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
                         if (i < 0 || j < 0 || i > 39 || j > 39)
@@ -168,6 +180,7 @@ public class DijkstrasPathFinding extends PathFinder {
                         if (type == Node.PATHABLE)
                             typeChecksOut = true;
 
+                        //if its pathable
                         if (typeChecksOut) {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
                                 continue;
@@ -178,13 +191,16 @@ public class DijkstrasPathFinding extends PathFinder {
                             if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
                                 continue;
 
+                            //calculate new heuristic (which is constant for dijkstra's point to point)
                             double newH = heuristic(pathfindingGraph[i][j], pathfindingGraph[pac.getExactX()][pac.getExactY()]);
 
+                            //if new H is better, use it and update
                             if (newH < pathfindingGraph[i][j].getHCost()) {
                                 pathfindingGraph[i][j].setHCost(newH);
                                 pathfindingGraph[i][j].setNodeParent(min);
                                 pathfindingGraph[i][j].setgCost(min.getGCost() + heuristic(pathfindingGraph[i][j], min));
 
+                                //after updating, if not in queue, add it
                                 if (!open.contains(pathfindingGraph[i][j]))
                                     open.add(pathfindingGraph[i][j]);
                             }
@@ -193,6 +209,7 @@ public class DijkstrasPathFinding extends PathFinder {
                 }
             }
 
+            //if we are here then we couldn't find a path
             System.out.println("No path found from " + controlGhost + " to " + pac);
         }
 
@@ -257,6 +274,7 @@ public class DijkstrasPathFinding extends PathFinder {
         return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
     }
 
+    //is one node next to another node
     private boolean nextTo(int x1, int y1, int x2, int y2) {
         if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;

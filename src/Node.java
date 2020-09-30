@@ -1,5 +1,6 @@
 import javafx.scene.paint.Color;
 
+//node class extends rectangle to allow drawing to gameDrawRoot
 public class Node extends javafx.scene.shape.Rectangle {
     //used for gscore
     public static final int INFINITY = Integer.MAX_VALUE;
@@ -8,16 +9,15 @@ public class Node extends javafx.scene.shape.Rectangle {
     public static final int WALL = 0;
     public static final int PATH = 3;
     public static final int PATHABLE = 4;
-
     public static final int INKY = 5;
     public static final int BLINKY = 6;
     public static final int PINKY = 7;
     public static final int CLYDE = 8;
+    public static final int PAC = 9;
 
+    //colors used in drawing
     public static final Color wallColor = javafx.scene.paint.Color.rgb(26,40,70,1);
     public static final Color lineColor = javafx.scene.paint.Color.rgb(0,0,0,1);
-
-    public static final int PAC = 9;
 
     //default nodeType is pathable
     private int nodeType = PATHABLE;
@@ -42,10 +42,13 @@ public class Node extends javafx.scene.shape.Rectangle {
     private double hCost = Integer.MAX_VALUE;
     private double gCost = Integer.MAX_VALUE;
 
+    //constructor, default type is a pathable node
     Node (int x, int y) {
         super(x* 10,y * 10,10,10);
         this.setFill(Color.rgb(0, 0, 0,0));
     }
+
+    //getters and setters-------------------------------------------------
 
     public double getDistance() {
         return this.distance;

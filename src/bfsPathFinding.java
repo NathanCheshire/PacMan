@@ -3,7 +3,10 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class bfsPathFinding extends PathFinder {
+    //static graph to update game root
     private static Node[][] graph;
+
+    //local grid to conduct path finding on
     private Node[][] pathfindingGraph;
     private static Pac pac;
     private Ghost controlGhost;
@@ -14,6 +17,7 @@ public class bfsPathFinding extends PathFinder {
         this.controlGhost = controlGhost;
     }
 
+    //move ghost up
     private void stepUp() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -32,6 +36,7 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //move ghost down
     private void stepDown() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -50,6 +55,7 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //move ghost left
     private void stepLeft() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -68,6 +74,7 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
     }
 
+    //move ghost right
     private void stepRight() {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
@@ -115,6 +122,7 @@ public class bfsPathFinding extends PathFinder {
             while (!open.isEmpty()) {
                 Node polledNode = open.poll();
 
+                //draw path and step if goal found
                 if (polledNode.getNodeX() == pac.getExactX() && polledNode.getNodeY() == pac.getExactY() || nextTo(polledNode.getNodeX(), polledNode.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(polledNode);
 
@@ -150,6 +158,7 @@ public class bfsPathFinding extends PathFinder {
                     return;
                 }
 
+                //for valid neighbors
                 for (int i = polledNode.getNodeX() - 1 ; i < polledNode.getNodeX() + 2 ; i++) {
                     for (int j = polledNode.getNodeY() - 1 ; j < polledNode.getNodeY() + 2 ; j++) {
                         if (i < 0 || j < 0 || i > 39 || j > 39)
@@ -169,6 +178,7 @@ public class bfsPathFinding extends PathFinder {
                         if (type == Node.PATHABLE)
                             typeChecksOut = true;
 
+                        //if its pathable
                         if (typeChecksOut) {
                             if (i == polledNode.getNodeX() - 1 && j == polledNode.getNodeY() - 1)
                                 continue;
@@ -179,6 +189,7 @@ public class bfsPathFinding extends PathFinder {
                             if (i == polledNode.getNodeX() - 1 && j == polledNode.getNodeY() + 1)
                                 continue;
 
+                            //if visited, set visited, set parent, add to queue
                             if (!pathfindingGraph[i][j].isVisited()) {
                                 pathfindingGraph[i][j].setVisited(true);
                                 pathfindingGraph[i][j].setNodeParent(polledNode);
@@ -189,6 +200,7 @@ public class bfsPathFinding extends PathFinder {
                 }
             }
 
+            //if here then no path
             System.out.println("No path found from " + controlGhost + " to " + pac);
         }
 
@@ -229,6 +241,7 @@ public class bfsPathFinding extends PathFinder {
         System.out.println("\n\n\n");
     }
 
+    //is one node next to another
     private boolean nextTo(int x1, int y1, int x2, int y2) {
         if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;

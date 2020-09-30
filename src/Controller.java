@@ -27,7 +27,6 @@ import java.util.Stack;
 //todo fix issue where a ghost is moving through a path and isn't properly drawn outside the path
 //todo switch algorithm mid game
 //todo fix drawing paths when game stopped and checkbox checked
-//todo fix death message trigger in hardmode (path to 10 second death even if not true)
 //todo make all ghosts purple and use A* no matter what in hard mode
 //todo start ghosts faster in hardmode and decrease 10 to 5
 //todo put ghosts at least 15 distance away from pac
@@ -519,7 +518,7 @@ public class Controller {
         if (hardModeEnable) {
             if (inky != null) {
                 if (nsecondsInkySeen / 10.0  == 500000000)
-                    endGame("inky");
+                    endGame("inky", true);
 
                 if (straightSight(inky.getExactX(), inky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsInkySeen += gameTimeout;
@@ -530,7 +529,7 @@ public class Controller {
 
             if (blinky != null) {
                 if (nsecondsBlinkySeen / 10.0  == 500000000)
-                    endGame("blinky");
+                    endGame("blinky",true);
 
                 if (straightSight(blinky.getExactX(), blinky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsBlinkySeen += gameTimeout;
@@ -541,7 +540,7 @@ public class Controller {
 
             if (pinky != null) {
                 if (nsecondsPinkySeen / 10.0  == 500000000)
-                    endGame("pinky");
+                    endGame("pinky", true);
 
                 if (straightSight(pinky.getExactX(), pinky.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsPinkySeen += gameTimeout;
@@ -552,7 +551,7 @@ public class Controller {
 
             if (clyde != null) {
                 if (nsecondsClydeSeen / 10.0  == 500000000)
-                    endGame("clyde");
+                    endGame("clyde", true);
 
                 if (straightSight(clyde.getExactX(), clyde.getExactY(), pac.getExactX(), pac.getExactY()))
                     nsecondsClydeSeen += gameTimeout;
@@ -584,7 +583,7 @@ public class Controller {
 
         String dead = isDead();
         if (!dead.equals("null"))
-            endGame(dead);
+            endGame(dead, false);
 
         hardModeEnable = hardModeCheck.isSelected();
         drawPathsEnable = showPathsCheck.isSelected();
@@ -799,10 +798,9 @@ public class Controller {
     }
 
     //freeze game and don't let a resume happen
-    private void endGame(String name) {
-        if (hardModeEnable)
-            //todo were they killed by sight?
-            System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
+    private void endGame(String name, boolean sight) {
+        if (hardModeEnable && sight)
+            System.out.println("You were killed by " + name + " since he saw you for too long, damn him!" + "\nPress reset to play again");
         else
             System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
         
@@ -1065,7 +1063,7 @@ public class Controller {
         //check for death
         String dead = isDead();
         if (!dead.equals("null"))
-            endGame(dead);
+            endGame(dead, false);
     }
 
     //sets a game node to a wall

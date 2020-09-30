@@ -237,9 +237,9 @@ public class AStarPathFinding extends PathFinder {
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
-            if (node1.getFCost() > node2.getFCost())
+            if (node1.getHCost() > node2.getHCost())
                 return 1;
-            else if (node1.getFCost() < node2.getFCost())
+            else if (node1.getHCost() < node2.getHCost())
                 return -1;
             else
                 return 0;

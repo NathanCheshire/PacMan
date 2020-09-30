@@ -29,12 +29,12 @@ public class Ghost extends Node {
 
     Ghost(int x, int y, int type) {
         super((x) * 10,(y) * 10);
-        
+
         this.type = type;
         super.setNodeType(type);
 
         this.position = new Node(x,y);
-        
+
         this.x = x;
         this.y = y;
 

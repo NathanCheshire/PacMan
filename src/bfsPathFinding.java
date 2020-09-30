@@ -1,4 +1,6 @@
 import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class bfsPathFinding extends PathFinder {
     private static Node[][] graph;
@@ -112,7 +114,6 @@ public class bfsPathFinding extends PathFinder {
 
             while (!open.isEmpty()) {
                 Node polledNode = open.poll();
-                open.remove(polledNode);
 
                 if (polledNode.getNodeX() == pac.getExactX() && polledNode.getNodeY() == pac.getExactY() || nextTo(polledNode.getNodeX(), polledNode.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(polledNode);

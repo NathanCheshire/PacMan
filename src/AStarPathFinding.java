@@ -250,13 +250,13 @@ public class AStarPathFinding extends PathFinder {
         System.out.println("\n\n\n");
     }
 
-    //this is properly setup
+    //comp nodes based on f cost, could also use g cost
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
-            if (node1.getHCost() > node2.getHCost())
+            if (node1.getFCost() > node2.getFCost())
                 return 1;
-            else if (node1.getHCost() < node2.getHCost())
+            else if (node1.getFCost() < node2.getFCost())
                 return -1;
             else
                 return 0;

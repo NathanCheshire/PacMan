@@ -95,7 +95,7 @@ public class AStarPathFinding extends PathFinder {
     }
 
     @Override
-    public void refreshPath(Node[][] graph, boolean move) {
+    public void refreshPath(Node[][] graph, boolean move, boolean onlyOneGhost) {
         try {
             this.graph = graph;
             pathfindingGraph = new Node[40][40];
@@ -123,6 +123,7 @@ public class AStarPathFinding extends PathFinder {
             while (!open.isEmpty()) {
                 Node min = open.poll();
                 open.remove(min);
+                Controller.showCheckedNode(min.getNodeX(),min.getNodeY());
 
                 //if goal, draw path and step in right direction
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
@@ -258,8 +259,9 @@ public class AStarPathFinding extends PathFinder {
                 return 1;
             else if (node1.getHCost() < node2.getHCost())
                 return -1;
-            else
+            else {
                 return 0;
+            }
         }
     }
 

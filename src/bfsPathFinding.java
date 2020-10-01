@@ -97,7 +97,7 @@ public class bfsPathFinding extends PathFinder {
     //search algorithm pseudocode that was followed was taken directly from slides
     //anything is is game checks or necessary to make it work in this (Pac-Man) context.
     @Override
-    public void refreshPath(Node[][] graph, boolean move) {
+    public void refreshPath(Node[][] graph, boolean move, boolean onlyOneGhost) {
         try {
             this.graph = graph;
             pathfindingGraph = new Node[40][40];
@@ -121,6 +121,7 @@ public class bfsPathFinding extends PathFinder {
 
             while (!open.isEmpty()) {
                 Node polledNode = open.poll();
+                Controller.showCheckedNode(polledNode.getNodeX(),polledNode.getNodeY());
 
                 //draw path and step if goal found
                 if (polledNode.getNodeX() == pac.getExactX() && polledNode.getNodeY() == pac.getExactY() || nextTo(polledNode.getNodeX(), polledNode.getNodeY(), pac.getExactX(), pac.getExactY())) {

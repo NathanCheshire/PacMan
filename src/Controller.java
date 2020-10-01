@@ -92,11 +92,58 @@ public class Controller {
         return this.yGame;
     }
 
+    ObservableList algorithmsList = FXCollections.observableArrayList();
+
     @FXML
     private HBox dragLabel;
+    @FXML
     public Button createMazeButton;
+    @FXML
     public Button advanceButton;
+    @FXML
+    public AnchorPane gameAnchorPane;
+    @FXML
+    public ChoiceBox<String> inkyChoice;
+    @FXML
+    public ChoiceBox<String> blinkyChoice;
+    @FXML
+    public ChoiceBox<String> pinkyChoice;
+    @FXML
+    public ChoiceBox<String> clydeChoice;
+    @FXML
+    public RadioButton inkyEnable;
+    @FXML
+    public RadioButton blinkyEnable;
+    @FXML
+    public RadioButton pinkyEnable;
+    @FXML
+    public RadioButton clydeEnable;
+    @FXML
+    private Button drawWallsButton;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button resetButton;
+    @FXML
+    private CheckBox showPathsCheck;
+    @FXML
+    private CheckBox hardModeCheck;
+    
+    public boolean onlyOneGhost() {
+        boolean inkyEn = inkyEnable.isSelected();
+        boolean blinkyEn = blinkyEnable.isSelected();
+        boolean pinkyEn = pinkyEnable.isSelected();
+        boolean clydeEn = clydeEnable.isSelected();
 
+        if (inkyEn && !blinkyEn && !pinkyEn && !clydeEn)
+            return true;
+        if (!inkyEn && blinkyEn && !pinkyEn && !clydeEn)
+            return true;
+        if (!inkyEn && !blinkyEn && pinkyEn && !clydeEn)
+            return true;
+        return !inkyEn && !blinkyEn && !pinkyEn && clydeEn;
+    }
+    
     @FXML
     public void initialize() {
         //window initialize outside of game
@@ -345,7 +392,7 @@ public class Controller {
                 inky.setPathFinder(new bfsPathFinding(grid,pac,inky));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 inky.setPathFinder(new DijkstrasPathFinding(grid,pac,inky));
             }
 
@@ -379,7 +426,7 @@ public class Controller {
                 blinky.setPathFinder(new bfsPathFinding(grid,pac,blinky));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 blinky.setPathFinder(new DijkstrasPathFinding(grid,pac,blinky));
             }
 
@@ -413,7 +460,7 @@ public class Controller {
                 pinky.setPathFinder(new bfsPathFinding(grid,pac,pinky));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 pinky.setPathFinder(new DijkstrasPathFinding(grid,pac,pinky));
             }
 
@@ -447,7 +494,7 @@ public class Controller {
                 clyde.setPathFinder(new bfsPathFinding(grid,pac,clyde));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 clyde.setPathFinder(new DijkstrasPathFinding(grid,pac,clyde));
             }
 
@@ -570,16 +617,16 @@ public class Controller {
 
         //this is where the pathfinders are called
         if (inkyEnable.isSelected())
-            inky.step(grid, true);
+            inky.step(grid, true, onlyOneGhost());
 
         if (blinkyEnable.isSelected())
-            blinky.step(grid, true);
+            blinky.step(grid, true, onlyOneGhost());
 
         if (pinkyEnable.isSelected())
-            pinky.step(grid, true);
+            pinky.step(grid, true, onlyOneGhost());
 
         if (clydeEnable.isSelected())
-            clyde.step(grid, true);
+            clyde.step(grid, true, onlyOneGhost());
 
         String dead = isDead();
         if (!dead.equals("null"))
@@ -640,14 +687,22 @@ public class Controller {
 
     //use this to update a path from pathfinding classes
     public static void showPath(int x, int y) {
-        if (x == pac.getNodeX() && y == pac.getNodeY())
-            return;
-
-        if (grid[x][y].getNodeType() != Node.PATHABLE)
+        if (x == pac.getNodeX() && y == pac.getNodeY()
+                || grid[x][y].getNodeType() != Node.PATHABLE)
             return;
 
         gameDrawRoot.getChildren().remove(grid[x][y]);
         grid[x][y].setFill(Ghost.pathColor);
+        gameDrawRoot.getChildren().add(grid[x][y]);
+    }
+
+    public static void showCheckedNode(int x, int y) {
+        if (x == pac.getNodeX() && y == pac.getNodeY()
+                || grid[x][y].getNodeType() != Node.PATHABLE)
+            return;
+
+        gameDrawRoot.getChildren().remove(grid[x][y]);
+        grid[x][y].setFill(Ghost.checkedNode);
         gameDrawRoot.getChildren().add(grid[x][y]);
     }
 
@@ -679,40 +734,7 @@ public class Controller {
         new Thread(task).start();
     }
 
-    ObservableList algorithmsList = FXCollections.observableArrayList();
-
-    @FXML
-    public AnchorPane gameAnchorPane;
-
-    @FXML
-    public ChoiceBox<String> inkyChoice;
-    @FXML
-    public ChoiceBox<String> blinkyChoice;
-    @FXML
-    public ChoiceBox<String> pinkyChoice;
-    @FXML
-    public ChoiceBox<String> clydeChoice;
-
-    @FXML
-    private RadioButton inkyEnable;
-    @FXML
-    private RadioButton blinkyEnable;
-    @FXML
-    private RadioButton pinkyEnable;
-    @FXML
-    private RadioButton clydeEnable;
-
-    @FXML
-    private Button drawWallsButton;
-    @FXML
-    private Button startButton;
-    @FXML
-    private Button resetButton;
-
-    @FXML
-    private CheckBox showPathsCheck;
-    @FXML
-    private CheckBox hardModeCheck;
+   
 
     //toggle button for drawing walls
     @FXML
@@ -914,13 +936,13 @@ public class Controller {
     private void showPathsHandler(ActionEvent e) {
         if (showPathsCheck.isSelected()) {
             if (inky != null)
-                inky.step(grid,false);
+                inky.step(grid,false, onlyOneGhost());
             if (blinky != null)
-                blinky.step(grid,false);
+                blinky.step(grid,false, onlyOneGhost());
             if (pinky != null)
-                pinky.step(grid,false);
+                pinky.step(grid,false, onlyOneGhost());
             if (clyde != null)
-                clyde.step(grid,false);
+                clyde.step(grid,false, onlyOneGhost());
         }
 
         else
@@ -1052,13 +1074,13 @@ public class Controller {
 
         //move each enabled ghost as long as the game is not running
         if (inky != null && !gameRunning)
-            inky.step(grid,true);
+            inky.step(grid,true, onlyOneGhost());
         if (blinky != null && !gameRunning)
-            blinky.step(grid,true);
+            blinky.step(grid,true, onlyOneGhost());
         if (pinky != null && !gameRunning)
-            pinky.step(grid,true);
+            pinky.step(grid,true, onlyOneGhost());
         if (clyde != null && !gameRunning)
-            clyde.step(grid,true);
+            clyde.step(grid,true, onlyOneGhost());
 
         //check for death
         String dead = isDead();

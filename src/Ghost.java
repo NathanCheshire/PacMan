@@ -4,7 +4,7 @@ import javafx.scene.paint.ImagePattern;
 
 public class Ghost extends Node {
     //ghosts postiion
-    private static Node position;
+    private Node position;
 
     //if we should render this ghost and path find
     private boolean enabled;
@@ -14,7 +14,7 @@ public class Ghost extends Node {
 
     public static final Color pathColor = javafx.scene.paint.Color.rgb(204,153,0,0.8);
     public static final Color pathableColor = javafx.scene.paint.Color.rgb(0,0,0,0);
-    public static final Color nextMove = javafx.scene.paint.Color.rgb(70,60,200,0.7);
+    public static final Color checkedNode = javafx.scene.paint.Color.rgb(70,150,150,0.7);
 
     //ghost pictures
     public static final ImagePattern inkyImage = new ImagePattern(new Image("Inky.png"));
@@ -74,8 +74,8 @@ public class Ghost extends Node {
         return this.position;
     }
 
-    public void step(Node[][] graph, boolean move) {
-        pathFinder.refreshPath(graph, move);
+    public void step(Node[][] graph, boolean move, boolean oog) {
+        pathFinder.refreshPath(graph, move, oog);
     }
 
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

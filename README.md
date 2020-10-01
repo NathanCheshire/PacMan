@@ -7,3 +7,5 @@ The user is also able to enable/disable certain ghosts, visualize each path each
 Many nights of sleep were lost on this project but all in all I had fun doing it and learned a lot about game development and path finding algorithms.
 
 As a bonus, I implemented a maze generator which uses backtracking which is also an AI technique/topic.
+
+The Jar file is inside of the jar directory or you may clone the whole project and tweak the source code via an IDE.

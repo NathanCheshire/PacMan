@@ -97,7 +97,120 @@ public class DijkstrasPathFinding extends PathFinder {
     @Override
     public void refreshPath(Node[][] graph, boolean move, boolean onlyOneGhost) {
         try {
-            //currently unavailable as major bug found
+            this.graph = graph;
+            pathfindingGraph = new Node[40][40];
+
+            for (int row = 0 ; row < 40 ; row++) {
+                for (int col = 0 ; col < 40 ; col++) {
+                    Node setMe = new Node(row,col);
+                    setMe.setNodeX(row);
+                    setMe.setNodeY(col);
+                    setMe.setNodeType(graph[row][col].getNodeType());
+                    pathfindingGraph[row][col] = setMe;
+                }
+            }
+
+            int startX = controlGhost.getExactX();
+            int startY = controlGhost.getExactY();
+
+            PriorityQueue<Node> open = new PriorityQueue<>(new NodeComparator());
+
+            pathfindingGraph[startX][startY].setgCost(0);
+            pathfindingGraph[startX][startY].setHCost(heuristic(pathfindingGraph[startX][startY],pathfindingGraph[pac.getExactX()][pac.getExactY()]));
+            open.add(pathfindingGraph[startX][startY]);
+
+            //while priority queue is not empty
+            while (!open.isEmpty()) {
+                Node min = open.poll();
+                open.remove(min);
+                Controller.showCheckedNode(min.getNodeX(),min.getNodeY());
+
+                //if goal, draw path and step in right direction
+                if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
+                    pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
+
+                    int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
+                    int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
+
+                    while (!nextTo(x,y,startX,startY)) {
+                        if (Controller.drawPathsEnable) {
+                            Controller.showPath(x,y);
+                        }
+
+                        int copyX = x;
+                        int copyY = y;
+
+                        x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
+                        y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
+                    }
+
+                    if (move) {
+                        if (startX == x && startY < y)
+                            stepDown();
+
+                        else if (startX == x && startY > y)
+                            stepUp();
+
+                        else if (startY == y && startX > x)
+                            stepLeft();
+
+                        else if (startY == y && startX < x)
+                            stepRight();
+                    }
+
+                    return;
+                }
+
+                //for valid enighbors
+                for (int i = min.getNodeX() - 1 ; i < min.getNodeX() + 2 ; i++) {
+                    for (int j = min.getNodeY() - 1 ; j < min.getNodeY() + 2 ; j++) {
+                        if (i < 0 || j < 0 || i > 39 || j > 39)
+                            continue;
+
+                        int type = pathfindingGraph[i][j].getNodeType();
+                        boolean typeChecksOut = false;
+
+                        if (type == Node.CLYDE)
+                            typeChecksOut = true;
+                        if (type == Node.INKY)
+                            typeChecksOut = true;
+                        if (type == Node.BLINKY)
+                            typeChecksOut = true;
+                        if (type == Node.PINKY)
+                            typeChecksOut = true;
+                        if (type == Node.PATHABLE)
+                            typeChecksOut = true;
+
+                        //if pathable
+                        if (typeChecksOut) {
+                            if (i == min.getNodeX() - 1 && j == min.getNodeY() - 1)
+                                continue;
+                            if (i == min.getNodeX() + 1 && j == min.getNodeY() + 1)
+                                continue;
+                            if (i == min.getNodeX() + 1 && j == min.getNodeY() - 1)
+                                continue;
+                            if (i == min.getNodeX() - 1 && j == min.getNodeY() + 1)
+                                continue;
+
+                            //calculate new H
+                            double newH = heuristic(pathfindingGraph[i][j], pathfindingGraph[pac.getExactX()][pac.getExactY()]);
+
+                            //if new H is better, update information
+                            if (newH < pathfindingGraph[i][j].getHCost()) {
+                                pathfindingGraph[i][j].setHCost(newH);
+                                pathfindingGraph[i][j].setNodeParent(min);
+                                pathfindingGraph[i][j].setgCost(min.getGCost() + heuristic(pathfindingGraph[i][j], min));
+
+                                //if not in queue, add it
+                                if (!open.contains(pathfindingGraph[i][j]))
+                                    open.add(pathfindingGraph[i][j]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //if here then there was no path
             System.out.println("No path found from " + controlGhost + " to " + pac);
         }
 
@@ -138,7 +251,7 @@ public class DijkstrasPathFinding extends PathFinder {
         System.out.println("\n\n\n");
     }
 
-    //this is properly setup
+    //comp nodes based on f cost, could also use g cost
     class NodeComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
@@ -147,19 +260,20 @@ public class DijkstrasPathFinding extends PathFinder {
             else if (node1.getFCost() < node2.getFCost())
                 return -1;
             else {
-                if (node1.getHCost() > node2.getHCost())
-                    return 1;
-                else if (node1.getHCost() < node2.getHCost())
-                    return -1;
-                else
-                    return 0;
+                return 0;
             }
         }
     }
 
-    //this should return 1 for dijkastra's
+    //this should return 1 for dijkstras
     private double heuristic(Node one, Node two) {
         return 1;
+    }
+
+    //distance function for Nodes, max should be 56.56
+    private double dist(Node one, Node two) {
+        if (one.getNodeX() == two.getNodeType() && one.getNodeY() == two.getNodeY()) return 0;
+        return Math.sqrt(Math.pow((one.getNodeX() - two.getNodeX()), 2) + Math.pow((one.getNodeY() - two.getNodeY()), 2));
     }
 
     //is one node next to another node

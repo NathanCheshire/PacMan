@@ -265,7 +265,7 @@ public class AStarPathFinding extends PathFinder {
         }
     }
 
-    //this should return 1 for dijkastra's
+    //this should return 1 for dijkstras
     private double heuristic(Node one, Node two) {
         return dist(one, two);
     }

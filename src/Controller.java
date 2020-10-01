@@ -392,7 +392,7 @@ public class Controller {
                 inky.setPathFinder(new bfsPathFinding(grid,pac,inky));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 inky.setPathFinder(new DijkstrasPathFinding(grid,pac,inky));
             }
 
@@ -426,7 +426,7 @@ public class Controller {
                 blinky.setPathFinder(new bfsPathFinding(grid,pac,blinky));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 blinky.setPathFinder(new DijkstrasPathFinding(grid,pac,blinky));
             }
 
@@ -460,7 +460,7 @@ public class Controller {
                 pinky.setPathFinder(new bfsPathFinding(grid,pac,pinky));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 pinky.setPathFinder(new DijkstrasPathFinding(grid,pac,pinky));
             }
 
@@ -494,7 +494,7 @@ public class Controller {
                 clyde.setPathFinder(new bfsPathFinding(grid,pac,clyde));
             }
 
-            else if (choice.equalsIgnoreCase("Dijkastras")) {
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
                 clyde.setPathFinder(new DijkstrasPathFinding(grid,pac,clyde));
             }
 

@@ -125,40 +125,9 @@ public class AStarPathFinding extends PathFinder {
                 open.remove(min);
                 Controller.showCheckedNode(min.getNodeX(),min.getNodeY());
 
-                //if goal, draw path and step in right direction
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
-
-                    int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
-                    int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
-
-                    while (!nextTo(x,y,startX,startY)) {
-                        if (Controller.drawPathsEnable) {
-                            Controller.showPath(x,y);
-                        }
-
-                        int copyX = x;
-                        int copyY = y;
-
-                        x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
-                        y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
-                    }
-
-                    if (move) {
-                        if (startX == x && startY < y)
-                            stepDown();
-
-                        else if (startX == x && startY > y)
-                            stepUp();
-
-                        else if (startY == y && startX > x)
-                            stepLeft();
-
-                        else if (startY == y && startX < x)
-                            stepRight();
-                    }
-
-                    return;
+                    break;
                 }
 
                 //for valid enighbors
@@ -208,6 +177,41 @@ public class AStarPathFinding extends PathFinder {
                         }
                     }
                 }
+            }
+
+            //if goal, draw path and step in right direction
+            if (pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeParent() != null) {
+
+            int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
+            int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
+
+            while (!nextTo(x,y,startX,startY)) {
+                if (Controller.drawPathsEnable) {
+                    Controller.showPath(x,y);
+                }
+
+                int copyX = x;
+                int copyY = y;
+
+                x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
+                y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
+            }
+
+            if (move) {
+                if (startX == x && startY < y)
+                    stepDown();
+
+                else if (startX == x && startY > y)
+                    stepUp();
+
+                else if (startY == y && startX > x)
+                    stepLeft();
+
+                else if (startY == y && startX < x)
+                    stepRight();
+            }
+
+                return;
             }
 
             //if here then there was no path

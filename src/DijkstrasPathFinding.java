@@ -23,9 +23,9 @@ public class DijkstrasPathFinding extends PathFinder {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
 
-        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() - 1);
+        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() + 1);
         newNode.setNodeX(controlGhost.getExactX());
-        newNode.setNodeY(controlGhost.getExactY() - 1);
+        newNode.setNodeY(controlGhost.getExactY() + 1);
 
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
@@ -35,6 +35,8 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        Controller.showCheckedNode(refreshX, refreshY);
     }
 
     //take a step down
@@ -54,6 +56,8 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        Controller.showCheckedNode(refreshX, refreshY);
     }
 
     //take a step left
@@ -73,6 +77,8 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        Controller.showCheckedNode(refreshX, refreshY);
     }
 
     //take a step right
@@ -92,6 +98,8 @@ public class DijkstrasPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        Controller.showCheckedNode(refreshX, refreshY);
     }
 
     @Override
@@ -123,7 +131,9 @@ public class DijkstrasPathFinding extends PathFinder {
             while (!open.isEmpty()) {
                 Node min = open.poll();
                 open.remove(min);
-                Controller.showCheckedNode(min.getNodeX(), min.getNodeY());
+
+                if (onlyOneGhost)
+                    Controller.showCheckedNode(min.getNodeX(), min.getNodeY());
 
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
@@ -179,14 +189,25 @@ public class DijkstrasPathFinding extends PathFinder {
                 }
             }
 
+            //todo glitch here with ghost being drawn over with node checked color
             //if goal, draw path and step in right direction
-            if (pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent() != null) {
+            if (pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeParent() != null) {
+                if (onlyOneGhost) {
+                    for (int i = 0 ; i < 40 ; i++) {
+                        for (int j = 0 ; j < 40 ; j++) {
+                            if (pathfindingGraph[i][j].getNodeParent() != null)
+                                Controller.showCheckedNode(i,j);
+                        }
+                    }
+                }
+
                 int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
                 int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
 
-                while (!nextTo(x, y, startX, startY)) {
+
+                while (!nextTo(x,y,startX,startY)) {
                     if (Controller.drawPathsEnable) {
-                        Controller.showPath(x, y);
+                        Controller.showPath(x,y);
                     }
 
                     int copyX = x;
@@ -213,7 +234,8 @@ public class DijkstrasPathFinding extends PathFinder {
                 return;
             }
 
-           System.out.println("No path found from " + controlGhost + " to " + pac);
+            //if here then there was no path
+            System.out.println("No path found from " + controlGhost + " to " + pac);
         }
 
         catch (Exception e) {

@@ -121,7 +121,9 @@ public class bfsPathFinding extends PathFinder {
 
             while (!open.isEmpty()) {
                 Node polledNode = open.poll();
-                Controller.showCheckedNode(polledNode.getNodeX(),polledNode.getNodeY());
+
+                if (onlyOneGhost)
+                    Controller.showCheckedNode(polledNode.getNodeX(),polledNode.getNodeY());
 
                 //draw path and step if goal found
                 if (polledNode.getNodeX() == pac.getExactX() && polledNode.getNodeY() == pac.getExactY() || nextTo(polledNode.getNodeX(), polledNode.getNodeY(), pac.getExactX(), pac.getExactY())) {

@@ -29,6 +29,8 @@ import java.util.Stack;
 //todo fix drawing paths when game stopped and checkbox checked
 //todo make all ghosts purple and use A* no matter what in hard mode
 //todo start ghosts faster in hardmode and decrease 10 to 5
+//todo don't refresh path if pac didn't move just advance again
+//todo fix pathfinding glitch where the ghost doesn't follow the path, I assume stems from a tie between nodes
 //todo put ghosts at least 15 distance away from pac
 //--------------------------------------------------------------------
 
@@ -697,8 +699,13 @@ public class Controller {
     }
 
     public static void showCheckedNode(int x, int y) {
-        if (x == pac.getNodeX() && y == pac.getNodeY()
-                || grid[x][y].getNodeType() != Node.PATHABLE)
+        if (x == pac.getNodeX() && y == pac.getNodeY())
+            return;
+
+        if (grid[x][y].getNodeType() != Node.PATHABLE)
+            return;
+
+        if (!drawPathsEnable)
             return;
 
         gameDrawRoot.getChildren().remove(grid[x][y]);

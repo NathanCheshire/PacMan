@@ -1,3 +1,9 @@
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Label;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -17,14 +23,14 @@ public class bfsPathFinding extends PathFinder {
         this.controlGhost = controlGhost;
     }
 
-    //move ghost up
-    private void stepUp() {
+    //take a step up
+    private void stepUp(boolean onlyOneGhost) {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
 
-        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() - 1);
+        Node newNode = new Node(controlGhost.getExactX(), controlGhost.getExactY() + 1);
         newNode.setNodeX(controlGhost.getExactX());
-        newNode.setNodeY(controlGhost.getExactY() - 1);
+        newNode.setNodeY(controlGhost.getExactY() + 1);
 
         graph[controlGhost.getExactX()][controlGhost.getExactY()] = newNode;
         controlGhost.setTranslateY(controlGhost.getTranslateY() - 10.0);
@@ -34,10 +40,13 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        if (onlyOneGhost)
+            Controller.showCheckedNode(refreshX, refreshY);
     }
 
-    //move ghost down
-    private void stepDown() {
+    //take a step down
+    private void stepDown(boolean onlyOneGhost) {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
 
@@ -53,10 +62,13 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        if (onlyOneGhost)
+            Controller.showCheckedNode(refreshX, refreshY);
     }
 
-    //move ghost left
-    private void stepLeft() {
+    //take a step left
+    private void stepLeft(boolean onlyOneGhost) {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
 
@@ -72,10 +84,13 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
+
+        if (onlyOneGhost)
+            Controller.showCheckedNode(refreshX, refreshY);
     }
 
-    //move ghost right
-    private void stepRight() {
+    //take a step right
+    private void stepRight(boolean onlyOneGhost) {
         int refreshX = controlGhost.getExactX();
         int refreshY = controlGhost.getExactY();
 
@@ -91,8 +106,10 @@ public class bfsPathFinding extends PathFinder {
         Controller.gameDrawRoot.getChildren().remove(graph[refreshX][refreshY]);
         graph[refreshX][refreshY] = new Node(refreshX, refreshY);
         Controller.gameDrawRoot.getChildren().add(graph[refreshX][refreshY]);
-    }
 
+        if (onlyOneGhost)
+            Controller.showCheckedNode(refreshX, refreshY);
+    }
 
     //search algorithm pseudocode that was followed was taken directly from slides
     //anything is is game checks or necessary to make it work in this (Pac-Man) context.
@@ -146,16 +163,16 @@ public class bfsPathFinding extends PathFinder {
 
                     if (move) {
                         if (startX == x && startY < y)
-                            stepDown();
+                            stepDown(onlyOneGhost);
 
                         else if (startX == x && startY > y)
-                            stepUp();
+                            stepUp(onlyOneGhost);
 
                         else if (startY == y && startX > x)
-                            stepLeft();
+                            stepLeft(onlyOneGhost);
 
                         else if (startY == y && startX < x)
-                            stepRight();
+                            stepRight(onlyOneGhost);
                     }
 
                     return;
@@ -204,7 +221,7 @@ public class bfsPathFinding extends PathFinder {
             }
 
             //if here then no path
-            System.out.println("No path found from " + controlGhost + " to " + pac);
+            showPopupMessage("No path found from " + controlGhost + " to " + pac,Main.primaryStage);
         }
 
         catch (Exception e) {
@@ -249,5 +266,30 @@ public class bfsPathFinding extends PathFinder {
         if (Math.abs(x1 - x2) == 1 && Math.abs(y1 - y2) == 0)
             return true;
         return Math.abs(x1 - x2) == 0 && Math.abs(y1 - y2) == 1;
+    }
+
+    //popup messages, can customize look based on the style sheet selected
+    private Popup createPopup(final String message) {
+        final Popup popup = new Popup();
+        popup.setAutoFix(true);
+        popup.setAutoHide(true);
+        popup.setHideOnEscape(true);
+        Label label = new Label(message);
+        label.getStylesheets().add("DefaultStyle.css");
+        label.getStyleClass().add("popup");
+        popup.getContent().add(label);
+        return popup;
+    }
+
+    private void showPopupMessage(final String message, final Stage stage) {
+        final Popup popup = createPopup(message);
+        popup.setOnShown(e -> {
+            popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2 + 80);
+            popup.setY(stage.getY() + 250);
+        });
+        popup.show(stage);
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> popup.hide());
+        delay.play();
     }
 }

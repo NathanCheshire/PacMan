@@ -1,4 +1,5 @@
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -17,6 +18,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -24,14 +29,15 @@ import java.util.Random;
 import java.util.Stack;
 
 //future features I plan to add/fix-----------------------------------
-//todo fix issue where a ghost is moving through a path and isn't properly drawn outside the path
-//todo switch algorithm mid game
-//todo fix drawing paths when game stopped and checkbox checked
+//todo fix ghost rendering when moving through path
+//todo switch algorithm mid game ability
+//todo fix drawing paths when game stopped and checkbox checked (using advance only and press advance paths are not drawn)
 //todo make all ghosts purple and use A* no matter what in hard mode
 //todo start ghosts faster in hardmode and decrease 10 to 5
-//todo don't refresh path if pac didn't move just advance again
-//todo fix pathfinding glitch where the ghost doesn't follow the path, I assume stems from a tie between nodes
+//todo don't refresh path if pac didn't move, just advance on path already there and calculated
+//todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes
 //todo put ghosts at least 15 distance away from pac
+//todo get to point where you disable no components
 //--------------------------------------------------------------------
 
 public class Controller {
@@ -113,13 +119,13 @@ public class Controller {
     @FXML
     public ChoiceBox<String> clydeChoice;
     @FXML
-    public RadioButton inkyEnable;
+    public CheckBox inkyEnable;
     @FXML
-    public RadioButton blinkyEnable;
+    public CheckBox blinkyEnable;
     @FXML
-    public RadioButton pinkyEnable;
+    public CheckBox pinkyEnable;
     @FXML
-    public RadioButton clydeEnable;
+    public CheckBox clydeEnable;
     @FXML
     private Button drawWallsButton;
     @FXML
@@ -130,7 +136,7 @@ public class Controller {
     private CheckBox showPathsCheck;
     @FXML
     private CheckBox hardModeCheck;
-    
+
     public boolean onlyOneGhost() {
         boolean inkyEn = inkyEnable.isSelected();
         boolean blinkyEn = blinkyEnable.isSelected();
@@ -145,7 +151,7 @@ public class Controller {
             return true;
         return !inkyEn && !blinkyEn && !pinkyEn && clydeEn;
     }
-    
+
     @FXML
     public void initialize() {
         //window initialize outside of game
@@ -181,6 +187,8 @@ public class Controller {
         //at least one ghost must be enabled
         inkyEnable.setSelected(true);
 
+        showPathsCheck.setSelected(true);
+
         //used to draw walls
         startMouseUpdates();
 
@@ -197,7 +205,7 @@ public class Controller {
                 int xNode = (int) Math.round(xGame / 10.0);
                 int yNode = (int) Math.round(yGame / 10.0);
 
-                if (drawWallsMode && !gameRunning) {
+                if (drawWallsMode) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
@@ -207,7 +215,7 @@ public class Controller {
                     }
                 }
 
-                else if (!gameRunning && !drawWallsMode){
+                else if (!drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode].getNodeType() == Node.WALL) {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
@@ -228,7 +236,7 @@ public class Controller {
                 int xNode = (int) Math.round(xGame / 10.0);
                 int yNode = (int) Math.round(yGame / 10.0);
 
-                if (drawWallsMode && !gameRunning) {
+                if (drawWallsMode) {
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode].getNodeType() == Node.PATHABLE) {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
@@ -239,7 +247,7 @@ public class Controller {
                     }
                 }
 
-                else if (!gameRunning && !drawWallsMode){
+                else if (!drawWallsMode){
                     if (xNode < 40 && xNode >= 0 && yNode < 40 && yNode >= 0) {
                         if (grid[xNode][yNode].getNodeType() == Node.WALL) {
                             gameDrawRoot.getChildren().remove(grid[xNode][yNode]);
@@ -272,6 +280,8 @@ public class Controller {
         }
 
         gameAnchorPane.getChildren().add(gameDrawRoot);
+
+        drawWallsButton.setText("Walls: Draw");
     }
 
     //the following methods handle when a ghost is selected/deselected
@@ -741,7 +751,7 @@ public class Controller {
         new Thread(task).start();
     }
 
-   
+
 
     //toggle button for drawing walls
     @FXML
@@ -772,13 +782,13 @@ public class Controller {
         }
 
         if (((double) wallNum / (double) total) >= 0.69) {
-            System.out.println("Too many walls on the grid! Please remove some so that you don't overwork the poor ghosts!");
+            showPopupMessage("Too many walls on the grid! Please remove some so that you don't overwork the poor ghosts!", Main.primaryStage);
             return;
         }
 
         //stop game
         if (gameRunning) {
-            System.out.println("Stoping Game");
+            showPopupMessage("Stoping Game",Main.primaryStage);
             startButton.setText("Start Game");
             gameRunning = !gameRunning;
             drawWallsMode = true;
@@ -786,24 +796,21 @@ public class Controller {
 
             tim.stop();
             Main.primaryStage.removeEventFilter(KeyEvent.KEY_PRESSED, pacMovement);
-            
+
             inkyEnable.setDisable(false);
             blinkyEnable.setDisable(false);
             pinkyEnable.setDisable(false);
             clydeEnable.setDisable(false);
-
-            drawWallsButton.setDisable(false);
-            hardModeCheck.setDisable(false);
         }
 
         //start/restart a paused game
         else {
             if (!inkyEnable.isSelected() && !blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected()) {
-                System.out.println("Must have at least one ghost enabled");
+                showPopupMessage("Must have at least one ghost enabled",Main.primaryStage);
                 return;
             }
 
-            System.out.println("Starting/Resuming Game");
+            showPopupMessage("Starting/Resuming Game",Main.primaryStage);
             startButton.setText("Stop Game");
             gameRunning = !gameRunning;
             drawWallsMode = false;
@@ -820,19 +827,16 @@ public class Controller {
             blinkyChoice.setDisable(true);
             pinkyChoice.setDisable(true);
             clydeChoice.setDisable(true);
-            
-            drawWallsButton.setDisable(true);
-            hardModeCheck.setDisable(true);
         }
     }
 
     //freeze game and don't let a resume happen
     private void endGame(String name, boolean sight) {
         if (hardModeEnable && sight)
-            System.out.println("You were killed by " + name + " since he saw you for too long, damn him!" + "\nPress reset to play again");
+            showPopupMessage("You were killed by " + name + " since he saw you for too long, damn him!" + "\nPress reset to play again",Main.primaryStage);
         else
-            System.out.println("You were killed by " + name + ", damn him!" + "\nPress reset to play again");
-        
+            showPopupMessage("You were killed by " + name + ", damn him!" + "\nPress reset to play again",Main.primaryStage);
+
         inkyEnable.setDisable(true);
         blinkyEnable.setDisable(true);
         pinkyEnable.setDisable(true);
@@ -842,9 +846,6 @@ public class Controller {
         blinkyChoice.setDisable(true);
         pinkyChoice.setDisable(true);
         clydeChoice.setDisable(true);
-        
-        drawWallsButton.setDisable(true);
-        hardModeCheck.setDisable(true);
 
         startButton.setDisable(true);
 
@@ -858,7 +859,7 @@ public class Controller {
     //reset to defaults
     @FXML
     private void resetGame(ActionEvent e) {
-        System.out.println("Reset Game");
+        showPopupMessage("Reset Game",Main.primaryStage);
         startButton.setDisable(false);
         startButton.setText("Start Game");
         drawWallsMode = true;
@@ -881,9 +882,6 @@ public class Controller {
         blinkyChoice.setDisable(false);
         pinkyChoice.setDisable(false);
         clydeChoice.setDisable(false);
-
-        drawWallsButton.setDisable(false);
-        hardModeCheck.setDisable(false);
 
         gameDrawRoot.getChildren().clear();
         pac = null;
@@ -922,7 +920,7 @@ public class Controller {
         clydeEnable.setSelected(false);
 
         hardModeCheck.setSelected(false);
-        showPathsCheck.setSelected(false);
+        showPathsCheck.setSelected(true);
 
         gameTimeout = 500000000;
         speedUpCounter = 0;
@@ -1068,7 +1066,7 @@ public class Controller {
     @FXML
     public void step(ActionEvent event) {
         if (!inkyEnable.isSelected() && !blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected()) {
-            System.out.println("Must have at least one ghost enabled");
+            showPopupMessage("Must have at least one ghost enabled",Main.primaryStage);
             return;
         }
 
@@ -1138,5 +1136,30 @@ public class Controller {
                     setPathable(i,j);
             }
         }
+    }
+
+    //popup messages, can customize look based on the style sheet selected
+    private Popup createPopup(final String message) {
+        final Popup popup = new Popup();
+        popup.setAutoFix(true);
+        popup.setAutoHide(true);
+        popup.setHideOnEscape(true);
+        Label label = new Label(message);
+        label.getStylesheets().add("DefaultStyle.css");
+        label.getStyleClass().add("popup");
+        popup.getContent().add(label);
+        return popup;
+    }
+
+    private void showPopupMessage(final String message, final Stage stage) {
+        final Popup popup = createPopup(message);
+        popup.setOnShown(e -> {
+            popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2 + 80);
+            popup.setY(stage.getY() + 250);
+        });
+        popup.show(stage);
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> popup.hide());
+        delay.play();
     }
 }

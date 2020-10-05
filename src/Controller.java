@@ -23,22 +23,23 @@ import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
-//future features I plan to add/fix-----------------------------------
+//future features I plan to add/fix-----------------------------------------------
 //todo fix ghost rendering when moving through path
+//todo fix disabling/reanabling ghosts when using advance feature
+//todo fix drawing very next path square when re-enabling paths when using advance feature
 //todo switch algorithm mid game ability
-//todo fix drawing paths when game stopped and checkbox checked (using advance only and press advance paths are not drawn)
-//todo make all ghosts purple and use A* no matter what in hard mode
-//todo start ghosts faster in hardmode and decrease 10 to 5
+//todo make all ghosts purple in hard mode
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
 //todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes
-//todo put ghosts at least 15 distance away from pac
 //todo get to point where you disable no components
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------------
 
 public class Controller {
     //game animation timer
@@ -357,12 +358,15 @@ public class Controller {
             clyde = null;
         }
 
+        int pacX = 0;
+        int pacY = 0;
+
         //put path on board
         if (pac == null) {
             pac = new Pac(0, 0);
 
-            int pacX = rn.nextInt(40);
-            int pacY = rn.nextInt(40);
+            pacX = rn.nextInt(40);
+            pacY = rn.nextInt(40);
 
             while (grid[pacX][pacY].getNodeType() != Node.PATHABLE) {
                 pacX = rn.nextInt(40);
@@ -385,7 +389,7 @@ public class Controller {
             int inkyY = rn.nextInt(40);
 
 
-            while (grid[inkyX][inkyY].getNodeType() != Node.PATHABLE) {
+            while (grid[inkyX][inkyY].getNodeType() != Node.PATHABLE || getDistance(inkyX, inkyY, pacX, pacY) < 10) {
                 inkyX = rn.nextInt(40);
                 inkyY = rn.nextInt(40);
             }
@@ -419,7 +423,7 @@ public class Controller {
             int blinkyX = rn.nextInt(40);
             int blinkyY = rn.nextInt(40);
 
-            while (grid[blinkyX][blinkyY].getNodeType() != Node.PATHABLE) {
+            while (grid[blinkyX][blinkyY].getNodeType() != Node.PATHABLE || getDistance(blinkyX, blinkyY, pacX, pacY) < 10) {
                 blinkyX = rn.nextInt(40);
                 blinkyY = rn.nextInt(40);
             }
@@ -453,7 +457,7 @@ public class Controller {
             int pinkyX = rn.nextInt(40);
             int pinkyY = rn.nextInt(40);
 
-            while (grid[pinkyX][pinkyY].getNodeType() != Node.PATHABLE) {
+            while (grid[pinkyX][pinkyY].getNodeType() != Node.PATHABLE || getDistance(pinkyX, pinkyY, pacX, pacY) < 10) {
                 pinkyX = rn.nextInt(40);
                 pinkyY = rn.nextInt(40);
             }
@@ -487,7 +491,7 @@ public class Controller {
             int clydeX = rn.nextInt(40);
             int clydeY = rn.nextInt(40);
 
-            while (grid[clydeX][clydeY].getNodeType() != Node.PATHABLE) {
+            while (grid[clydeX][clydeY].getNodeType() != Node.PATHABLE || getDistance(clydeX, clydeY, pacX, pacY) < 10) {
                 clydeX = rn.nextInt(40);
                 clydeY = rn.nextInt(40);
             }
@@ -573,10 +577,13 @@ public class Controller {
     private void update() {
         repaintGame();
 
+        if (pac == null)
+            return;
+
         //if it's hard mode, speed up ghosts or kill pac depending in input
         if (hardModeEnable) {
             if (inky != null) {
-                if (nsecondsInkySeen / 10.0  == 500000000)
+                if (nsecondsInkySeen / 5.0  == 500000000)
                     endGame("inky", true);
 
                 if (straightSight(inky.getExactX(), inky.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -587,7 +594,7 @@ public class Controller {
             }
 
             if (blinky != null) {
-                if (nsecondsBlinkySeen / 10.0  == 500000000)
+                if (nsecondsBlinkySeen / 5.0  == 500000000)
                     endGame("blinky",true);
 
                 if (straightSight(blinky.getExactX(), blinky.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -598,7 +605,7 @@ public class Controller {
             }
 
             if (pinky != null) {
-                if (nsecondsPinkySeen / 10.0  == 500000000)
+                if (nsecondsPinkySeen / 5.0  == 500000000)
                     endGame("pinky", true);
 
                 if (straightSight(pinky.getExactX(), pinky.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -609,7 +616,7 @@ public class Controller {
             }
 
             if (clyde != null) {
-                if (nsecondsClydeSeen / 10.0  == 500000000)
+                if (nsecondsClydeSeen / 5.0  == 500000000)
                     endGame("clyde", true);
 
                 if (straightSight(clyde.getExactX(), clyde.getExactY(), pac.getExactX(), pac.getExactY()))
@@ -618,11 +625,14 @@ public class Controller {
                 else
                     nsecondsClydeSeen = 0;
             }
+
             speedUpCounter += (gameTimeout / 1000000.0);
 
-            if (speedUpCounter >= 10000) {
+            //increase game speed if it has been 5 seconds in hard mode without killing pac
+            if (speedUpCounter >= 5000) {
                 if (gameTimeout >= 100000000)
                     gameTimeout -= 50000000;
+
                 speedUpCounter = 0;
             }
         }
@@ -1161,5 +1171,26 @@ public class Controller {
         PauseTransition delay = new PauseTransition(Duration.seconds(2));
         delay.setOnFinished(e -> popup.hide());
         delay.play();
+    }
+
+    //calculate euclidean distance between coordinates
+    private double getDistance(int x1, int y1, int x2, int y2) {
+        System.out.println("distance: " + Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2)));
+        return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+    }
+
+    @FXML
+    private void hardModeChangeHandler() {
+        if (hardModeCheck.isSelected()) {
+            inkyChoice.setValue("A*");
+            blinkyChoice.setValue("A*");
+            pinkyChoice.setValue("A*");
+            clydeChoice.setValue("A*");
+
+            inkyEnable.setSelected(true);
+            blinkyEnable.setSelected(true);
+            pinkyEnable.setSelected(true);
+            clydeEnable.setSelected(true);
+        }
     }
 }

@@ -61,7 +61,7 @@
          <tooltip>
             <Tooltip text="Show ghost paths" />
          </tooltip></CheckBox>
-      <CheckBox fx:id="hardModeCheck" focusTraversable="false" layoutX="502.0" layoutY="38.0" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 12;" text="Hard Mode">
+      <CheckBox fx:id="hardModeCheck" focusTraversable="false" layoutX="502.0" layoutY="38.0" mnemonicParsing="false" onAction="#hardModeChangeHandler" style="-fx-background-color: transparent; -fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 12;" text="Hard Mode">
          <tooltip>
             <Tooltip text="If a ghost has direct sight of pac for 10 seconds, you die. Ghosts speed up every 10 seconds" />
          </tooltip></CheckBox>

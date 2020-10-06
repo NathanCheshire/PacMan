@@ -253,6 +253,10 @@ public class AStarPathFinding extends PathFinder {
                     y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
                 }
 
+                if (Controller.drawPathsEnable) {
+                    Controller.showPath(x,y);
+                }
+
                 return;
             }
 

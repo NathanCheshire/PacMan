@@ -142,9 +142,6 @@ public class DijkstrasPathFinding extends PathFinder {
                 Node min = open.poll();
                 open.remove(min);
 
-                if (onlyOneGhost)
-                    Controller.showCheckedNode(min.getNodeX(), min.getNodeY());
-
                 if (min.getNodeX() == pac.getExactX() && min.getNodeY() == pac.getExactY() || nextTo(min.getNodeX(), min.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(min);
                     break;
@@ -200,16 +197,8 @@ public class DijkstrasPathFinding extends PathFinder {
             }
 
             //if goal, draw path and step in right direction
+            //if goal, draw path and step in right direction
             if (pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeParent() != null) {
-                if (onlyOneGhost) {
-                    for (int i = 0 ; i < 40 ; i++) {
-                        for (int j = 0 ; j < 40 ; j++) {
-                            if (pathfindingGraph[i][j].getNodeParent() != null)
-                                Controller.showCheckedNode(i,j);
-                        }
-                    }
-                }
-
                 int x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
                 int y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
 
@@ -238,6 +227,34 @@ public class DijkstrasPathFinding extends PathFinder {
 
                     else if (startY == y && startX < x)
                         stepRight(onlyOneGhost);
+                }
+
+                if (onlyOneGhost) {
+                    for (int i = 0 ; i < 40 ; i++) {
+                        for (int j = 0 ; j < 40 ; j++) {
+                            if (pathfindingGraph[i][j].getNodeParent() != null)
+                                Controller.showCheckedNode(i,j);
+                        }
+                    }
+                }
+
+                x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
+                y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
+
+                while (!nextTo(x,y,startX,startY)) {
+                    if (Controller.drawPathsEnable) {
+                        Controller.showPath(x,y);
+                    }
+
+                    int copyX = x;
+                    int copyY = y;
+
+                    x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
+                    y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
+                }
+
+                if (Controller.drawPathsEnable) {
+                    Controller.showPath(x,y);
                 }
 
                 return;

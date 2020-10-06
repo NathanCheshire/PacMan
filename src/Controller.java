@@ -33,7 +33,7 @@ import java.util.Stack;
 //future features I plan to add/fix-----------------------------------------------
 //todo fix ghost rendering when moving through path
 //todo fix disabling/reanabling ghosts when using advance feature
-//todo fix drawing very next path square when re-enabling paths when using advance feature
+//todo if game running and draw walls off, then stop game, then use advance feature but turn on show paths, they are not shown
 //todo switch algorithm mid game ability
 //todo make all ghosts purple in hard mode
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
@@ -719,13 +719,8 @@ public class Controller {
     }
 
     public static void showCheckedNode(int x, int y) {
-        if (x == pac.getNodeX() && y == pac.getNodeY())
-            return;
-
-        if (grid[x][y].getNodeType() != Node.PATHABLE)
-            return;
-
-        if (!drawPathsEnable)
+        if (x == pac.getNodeX() && y == pac.getNodeY()
+                || grid[x][y].getNodeType() != Node.PATHABLE)
             return;
 
         gameDrawRoot.getChildren().remove(grid[x][y]);
@@ -1175,7 +1170,6 @@ public class Controller {
 
     //calculate euclidean distance between coordinates
     private double getDistance(int x1, int y1, int x2, int y2) {
-        System.out.println("distance: " + Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2)));
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 

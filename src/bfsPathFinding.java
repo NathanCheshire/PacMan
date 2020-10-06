@@ -139,9 +139,6 @@ public class bfsPathFinding extends PathFinder {
             while (!open.isEmpty()) {
                 Node polledNode = open.poll();
 
-                if (onlyOneGhost)
-                    Controller.showCheckedNode(polledNode.getNodeX(),polledNode.getNodeY());
-
                 //draw path and step if goal found
                 if (polledNode.getNodeX() == pac.getExactX() && polledNode.getNodeY() == pac.getExactY() || nextTo(polledNode.getNodeX(), polledNode.getNodeY(), pac.getExactX(), pac.getExactY())) {
                     pathfindingGraph[pac.getExactX()][pac.getExactY()].setNodeParent(polledNode);
@@ -173,6 +170,34 @@ public class bfsPathFinding extends PathFinder {
 
                         else if (startY == y && startX < x)
                             stepRight(onlyOneGhost);
+                    }
+
+                    if (onlyOneGhost) {
+                        for (int i = 0 ; i < 40 ; i++) {
+                            for (int j = 0 ; j < 40 ; j++) {
+                                if (pathfindingGraph[i][j].getNodeParent() != null)
+                                    Controller.showCheckedNode(i,j);
+                            }
+                        }
+                    }
+
+                    x = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeX();
+                    y = pathfindingGraph[pac.getExactX()][pac.getExactY()].getNodeParent().getNodeY();
+
+                    while (!nextTo(x,y,startX,startY)) {
+                        if (Controller.drawPathsEnable) {
+                            Controller.showPath(x,y);
+                        }
+
+                        int copyX = x;
+                        int copyY = y;
+
+                        x = pathfindingGraph[copyX][copyY].getNodeParent().getNodeX();
+                        y = pathfindingGraph[copyX][copyY].getNodeParent().getNodeY();
+                    }
+
+                    if (Controller.drawPathsEnable) {
+                        Controller.showPath(x,y);
                     }
 
                     return;

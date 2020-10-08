@@ -32,12 +32,13 @@ import java.util.Stack;
 
 //future features I plan to add/fix-----------------------------------------------
 //todo fix ghost rendering when moving through path
-//todo fix disabling/reanabling ghosts when using advance feature
 //todo if game running and draw walls off, then stop game, then use advance feature but turn on show paths, they are not shown
 //todo Make a game output area instea of notification
 //todo make all ghosts purple in hard mode
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
 //todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes
+//todo if they add too many walls stop the game and don't let them start again until some are removed
+//todo if they disable all ghosts end game with the message you must have at least one ghost enabled
 //--------------------------------------------------------------------------------
 
 public class Controller {
@@ -136,6 +137,8 @@ public class Controller {
     private CheckBox showPathsCheck;
     @FXML
     private CheckBox hardModeCheck;
+    @FXML
+    public static TextField gameConsole;
 
     public boolean onlyOneGhost() {
         boolean inkyEn = inkyEnable.isSelected();
@@ -191,6 +194,9 @@ public class Controller {
 
         //used to draw walls
         startMouseUpdates();
+
+        //init game console
+        gameConsole = new TextField();
 
         //init grid
         grid = new Node[40][40];
@@ -284,16 +290,51 @@ public class Controller {
         drawWallsButton.setText("Walls: Draw");
     }
 
-    //the following methods handle when a ghost is selected/deselected
-
-    //todo remove ghost from board  and make sure coordinates are recalculated when checkbox is deselected while game is running
     @FXML
     public void inkyEnableHandle(ActionEvent e) {
-        System.out.println("here");
         if (inky != null) {
             grid[inky.getExactX()][inky.getExactY()] = new Node(inky.getExactX(), inky.getExactY());
             grid[inky.getExactX()][inky.getExactY()].setFill(Ghost.pathableColor);
             inky = null;
+        }
+
+        else {
+            Random rn = new Random();
+            int pacX = pac.getNodeX();
+            int pacY = pac.getNodeY();
+
+            inky = new Ghost(0, 0,Ghost.INKY);
+
+            int inkyX = rn.nextInt(40);
+            int inkyY = rn.nextInt(40);
+
+
+            while (grid[inkyX][inkyY].getNodeType() != Node.PATHABLE || getDistance(inkyX, inkyY, pacX, pacY) < 10) {
+                inkyX = rn.nextInt(40);
+                inkyY = rn.nextInt(40);
+            }
+
+            inky.setTranslateX(inkyX * 10);
+            inky.setTranslateY(inkyY * 10);
+
+            grid[inkyX][inkyY] = inky;
+
+            inky.setExactX(inkyX);
+            inky.setExactY(inkyY);
+
+            String choice = inkyChoice.getValue();
+
+            if  (choice.equalsIgnoreCase("BFS")) {
+                inky.setPathFinder(new bfsPathFinding(grid,pac,inky));
+            }
+
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
+                inky.setPathFinder(new DijkstrasPathFinding(grid,pac,inky));
+            }
+
+            else {
+                inky.setPathFinder(new AStarPathFinding(grid,pac,inky));
+            }
         }
     }
 
@@ -306,6 +347,44 @@ public class Controller {
             gameDrawRoot.getChildren().add(grid[blinky.getExactX()][blinky.getExactY()]);
             blinky = null;
         }
+
+        else {
+            Random rn = new Random();
+            int pacX = pac.getNodeX();
+            int pacY = pac.getNodeY();
+
+            blinky = new Ghost(0, 0,Ghost.BLINKY);
+
+            int blinkyX = rn.nextInt(40);
+            int blinkyY = rn.nextInt(40);
+
+            while (grid[blinkyX][blinkyY].getNodeType() != Node.PATHABLE || getDistance(blinkyX, blinkyY, pacX, pacY) < 10) {
+                blinkyX = rn.nextInt(40);
+                blinkyY = rn.nextInt(40);
+            }
+
+            blinky.setTranslateX(blinkyX * 10);
+            blinky.setTranslateY(blinkyY * 10);
+
+            grid[blinkyX][blinkyY] = blinky;
+
+            blinky.setExactX(blinkyX);
+            blinky.setExactY(blinkyY);
+
+            String choice = blinkyChoice.getValue();
+
+            if  (choice.equalsIgnoreCase("BFS")) {
+                blinky.setPathFinder(new bfsPathFinding(grid,pac,blinky));
+            }
+
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
+                blinky.setPathFinder(new DijkstrasPathFinding(grid,pac,blinky));
+            }
+
+            else {
+                blinky.setPathFinder(new AStarPathFinding(grid,pac,blinky));
+            }
+        }
     }
 
     @FXML
@@ -317,6 +396,44 @@ public class Controller {
             gameDrawRoot.getChildren().add( grid[pinky.getExactX()][pinky.getExactY()]);
             pinky = null;
         }
+
+        else {
+            Random rn = new Random();
+            int pacX = pac.getNodeX();
+            int pacY = pac.getNodeY();
+
+            pinky = new Ghost(0, 0,Ghost.PINKY);
+
+            int pinkyX = rn.nextInt(40);
+            int pinkyY = rn.nextInt(40);
+
+            while (grid[pinkyX][pinkyY].getNodeType() != Node.PATHABLE || getDistance(pinkyX, pinkyY, pacX, pacY) < 10) {
+                pinkyX = rn.nextInt(40);
+                pinkyY = rn.nextInt(40);
+            }
+
+            pinky.setTranslateX(pinkyX * 10);
+            pinky.setTranslateY(pinkyY * 10);
+
+            grid[pinkyX][pinkyY] = pinky;
+
+            pinky.setExactX(pinkyX);
+            pinky.setExactY(pinkyY);
+
+            String choice = pinkyChoice.getValue();
+
+            if  (choice.equalsIgnoreCase("BFS")) {
+                pinky.setPathFinder(new bfsPathFinding(grid,pac,pinky));
+            }
+
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
+                pinky.setPathFinder(new DijkstrasPathFinding(grid,pac,pinky));
+            }
+
+            else {
+                pinky.setPathFinder(new AStarPathFinding(grid,pac,pinky));
+            }
+        }
     }
 
     @FXML
@@ -327,6 +444,44 @@ public class Controller {
             grid[clyde.getExactX()][clyde.getExactY()].setFill(Ghost.pathableColor);
             gameDrawRoot.getChildren().add(grid[clyde.getExactX()][clyde.getExactY()]);
             clyde = null;
+        }
+
+        else {
+            Random rn = new Random();
+            int pacX = pac.getNodeX();
+            int pacY = pac.getNodeY();
+
+            clyde = new Ghost(0, 0,Ghost.CLYDE);
+
+            int clydeX = rn.nextInt(40);
+            int clydeY = rn.nextInt(40);
+
+            while (grid[clydeX][clydeY].getNodeType() != Node.PATHABLE || getDistance(clydeX, clydeY, pacX, pacY) < 10) {
+                clydeX = rn.nextInt(40);
+                clydeY = rn.nextInt(40);
+            }
+
+            clyde.setTranslateX(clydeX * 10);
+            clyde.setTranslateY(clydeY * 10);
+
+            grid[clydeX][clydeY] = clyde;
+
+            clyde.setExactX(clydeX);
+            clyde.setExactY(clydeY);
+
+            String choice = clydeChoice.getValue();
+
+            if  (choice.equalsIgnoreCase("BFS")) {
+                clyde.setPathFinder(new bfsPathFinding(grid,pac,clyde));
+            }
+
+            else if (choice.equalsIgnoreCase("Dijkstras")) {
+                clyde.setPathFinder(new DijkstrasPathFinding(grid,pac,clyde));
+            }
+
+            else {
+                clyde.setPathFinder(new AStarPathFinding(grid,pac,clyde));
+            }
         }
     }
 
@@ -586,8 +741,6 @@ public class Controller {
         int pacX = pac.getNodeX();
         int pacY = pac.getNodeY();
 
-        //todo what if all ghosts are disabled
-
         //figure out where to put ghosts
         if (inkyEnable.isSelected() && inky == null) {
             inky = new Ghost(0, 0,Ghost.INKY);
@@ -726,7 +879,6 @@ public class Controller {
             }
         }
 
-        //todo what if we changed the algorithm for a ghost
 
         //if it's hard mode, speed up ghosts or kill pac depending in input
         if (hardModeEnable) {
@@ -804,6 +956,9 @@ public class Controller {
 
         hardModeEnable = hardModeCheck.isSelected();
         drawPathsEnable = showPathsCheck.isSelected();
+
+        if (!inkyEnable.isSelected() && ! blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected())
+            endGame("You must have at least one ghost enabled to play",false);
     }
 
     //updates gameDrawRoot walls, pathable nodes, pac, and ghsots
@@ -1256,29 +1411,9 @@ public class Controller {
         }
     }
 
-    //popup messages, can customize look based on the style sheet selected
-    private Popup createPopup(final String message) {
-        final Popup popup = new Popup();
-        popup.setAutoFix(true);
-        popup.setAutoHide(true);
-        popup.setHideOnEscape(true);
-        Label label = new Label(message);
-        label.getStylesheets().add("DefaultStyle.css");
-        label.getStyleClass().add("popup");
-        popup.getContent().add(label);
-        return popup;
-    }
-
+    //todo fix this method and styling of it
     private void showPopupMessage(final String message, final Stage stage) {
-        final Popup popup = createPopup(message);
-        popup.setOnShown(e -> {
-            popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2 + 80);
-            popup.setY(stage.getY() + 250);
-        });
-        popup.show(stage);
-        PauseTransition delay = new PauseTransition(Duration.seconds(2));
-        delay.setOnFinished(e -> popup.hide());
-        delay.play();
+        gameConsole.setText(message + "\n");
     }
 
     //calculate euclidean distance between coordinates

@@ -4,13 +4,14 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
 <AnchorPane fx:id="anchorParent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(to bottom, #ffafbd   , #ffc3a0);;" styleClass="parent" stylesheets="@DefaultStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
-      <CheckBox fx:id="inkyEnable" layoutX="72.0" layoutY="101.0" mnemonicParsing="false" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="2.0" />
+      <CheckBox fx:id="inkyEnable" layoutX="72.0" layoutY="75.0" mnemonicParsing="false" onAction="#inkyEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="2.0" />
       <HBox fx:id="dragLabel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="600.0" style="-fx-background-color: rgb(26, 32, 51);" styleClass="drag-label">
          <children>
             <Label fx:id="CloseButton" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#close_app" prefHeight="20.0" prefWidth="20.0" styleClass="close-btn" stylesheets="@../../Group-10/src/DefaultStyle.css" text="X" textFill="WHITE" translateX="580.0">
@@ -24,26 +25,26 @@
             <Label fx:id="CloseButton1" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#minimize_stage" prefHeight="20.0" prefWidth="20.0" styleClass="min-btn" text="—" textFill="WHITE" translateX="485.0" />
          </children>
       </HBox>
-      <ChoiceBox fx:id="inkyChoice" focusTraversable="false" layoutX="29.0" layoutY="119.0" prefHeight="23.0" prefWidth="109.0" translateY="5.0">
+      <ChoiceBox fx:id="inkyChoice" focusTraversable="false" layoutX="29.0" layoutY="93.0" prefHeight="23.0" prefWidth="109.0" translateY="5.0">
          <tooltip>
             <Tooltip text="Select Algorithm" />
          </tooltip></ChoiceBox>
-      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="31.0" layoutY="95.0" prefHeight="20.0" prefWidth="35.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Inky" translateY="9.0" />
-      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="21.0" layoutY="195.0" prefHeight="20.0" prefWidth="55.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Blinky" translateY="-20.0" />
-      <ChoiceBox fx:id="blinkyChoice" focusTraversable="false" layoutX="25.0" layoutY="215.0" prefHeight="23.0" prefWidth="117.0" translateY="-20.0">
+      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="31.0" layoutY="69.0" prefHeight="20.0" prefWidth="35.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Inky" translateY="9.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="21.0" layoutY="169.0" prefHeight="20.0" prefWidth="55.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Blinky" translateY="-20.0" />
+      <ChoiceBox fx:id="blinkyChoice" focusTraversable="false" layoutX="25.0" layoutY="189.0" prefHeight="23.0" prefWidth="117.0" translateY="-20.0">
          <tooltip>
             <Tooltip text="Select Algorithm" />
          </tooltip></ChoiceBox>
-      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="25.0" layoutY="295.0" prefHeight="20.0" prefWidth="47.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Pinky" translateY="-50.0" />
-      <ChoiceBox fx:id="pinkyChoice" focusTraversable="false" layoutX="25.0" layoutY="315.0" prefHeight="23.0" prefWidth="117.0" translateY="-50.0">
+      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="25.0" layoutY="269.0" prefHeight="20.0" prefWidth="47.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Pinky" translateY="-50.0" />
+      <ChoiceBox fx:id="pinkyChoice" focusTraversable="false" layoutX="25.0" layoutY="289.0" prefHeight="23.0" prefWidth="117.0" translateY="-50.0">
          <tooltip>
             <Tooltip text="Select Algorithm" />
          </tooltip></ChoiceBox>
-      <ChoiceBox fx:id="clydeChoice" focusTraversable="false" layoutX="25.0" layoutY="421.0" prefHeight="23.0" prefWidth="117.0" translateY="-80.0">
+      <ChoiceBox fx:id="clydeChoice" focusTraversable="false" layoutX="25.0" layoutY="395.0" prefHeight="23.0" prefWidth="117.0" translateY="-80.0">
          <tooltip>
             <Tooltip text="Select Algorithm" />
          </tooltip></ChoiceBox>
-      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="25.0" layoutY="401.0" prefHeight="20.0" prefWidth="47.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Clyde" translateY="-80.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="25.0" layoutY="375.0" prefHeight="20.0" prefWidth="47.0" style="-fx-font-family: sans-serif; -fx-font-weight: bold; -fx-font-size: 14;" text="Clyde" translateY="-80.0" />
       <AnchorPane fx:id="gameAnchorPane" layoutX="176.0" layoutY="79.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" styleClass="game" />
       <Button fx:id="drawWallsButton" focusTraversable="false" layoutX="22.0" layoutY="34.0" mnemonicParsing="false" onAction="#drawWalls" prefHeight="26.0" prefWidth="124.0" styleClass="button-login" text="Walls: Draw">
          <tooltip>
@@ -65,16 +66,17 @@
          <tooltip>
             <Tooltip text="If a ghost has direct sight of pac for 10 seconds, you die. Ghosts speed up every 10 seconds" />
          </tooltip></CheckBox>
-      <Button fx:id="advanceButton" focusTraversable="false" layoutX="30.0" layoutY="385.0" mnemonicParsing="false" onAction="#step" prefHeight="26.0" prefWidth="109.0" styleClass="button-login" text="Advance">
+      <Button fx:id="advanceButton" focusTraversable="false" layoutX="30.0" layoutY="359.0" mnemonicParsing="false" onAction="#step" prefHeight="26.0" prefWidth="109.0" styleClass="button-login" text="Advance">
          <tooltip>
             <Tooltip text="Increment game by one move" />
          </tooltip></Button>
-      <Button fx:id="randomMazeButton" focusTraversable="false" layoutX="23.0" layoutY="436.0" mnemonicParsing="false" onAction="#drawMaze" prefHeight="26.0" prefWidth="124.0" styleClass="button-login" text="Create Maze">
+      <Button fx:id="randomMazeButton" focusTraversable="false" layoutX="23.0" layoutY="407.0" mnemonicParsing="false" onAction="#drawMaze" prefHeight="26.0" prefWidth="124.0" styleClass="button-login" text="Create Maze">
          <tooltip>
             <Tooltip text="Generate a random maze for pac and his friends" />
          </tooltip></Button>
-      <CheckBox fx:id="blinkyEnable" layoutX="72.0" layoutY="176.0" mnemonicParsing="false" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
-      <CheckBox fx:id="pinkyEnable" layoutX="72.0" layoutY="246.0" mnemonicParsing="false" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
-      <CheckBox fx:id="clydeEnable" layoutX="72.0" layoutY="322.0" mnemonicParsing="false" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
+      <CheckBox fx:id="blinkyEnable" layoutX="72.0" layoutY="150.0" mnemonicParsing="false" onAction="#blinkyEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
+      <CheckBox fx:id="pinkyEnable" layoutX="72.0" layoutY="220.0" mnemonicParsing="false" onAction="#pinkyEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
+      <CheckBox fx:id="clydeEnable" layoutX="72.0" layoutY="296.0" mnemonicParsing="false" onAction="#clydeEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
+      <TextArea layoutX="14.0" layoutY="440.0" prefHeight="44.0" prefWidth="148.0" promptText="long message long message long message" />
    </children>
 </AnchorPane>

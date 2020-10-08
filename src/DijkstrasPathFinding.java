@@ -333,28 +333,7 @@ public class DijkstrasPathFinding extends PathFinder {
         return Math.abs(x1 - x2) == 0 && Math.abs(y1 - y2) == 1;
     }
 
-    //popup messages, can customize look based on the style sheet selected
-    private Popup createPopup(final String message) {
-        final Popup popup = new Popup();
-        popup.setAutoFix(true);
-        popup.setAutoHide(true);
-        popup.setHideOnEscape(true);
-        Label label = new Label(message);
-        label.getStylesheets().add("DefaultStyle.css");
-        label.getStyleClass().add("popup");
-        popup.getContent().add(label);
-        return popup;
-    }
-
     private void showPopupMessage(final String message, final Stage stage) {
-        final Popup popup = createPopup(message);
-        popup.setOnShown(e -> {
-            popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2 + 80);
-            popup.setY(stage.getY() + 250);
-        });
-        popup.show(stage);
-        PauseTransition delay = new PauseTransition(Duration.seconds(2));
-        delay.setOnFinished(e -> popup.hide());
-        delay.play();
+        Controller.gameConsole.setText(message + "\n");
     }
 }

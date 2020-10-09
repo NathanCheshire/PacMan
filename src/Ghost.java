@@ -115,6 +115,6 @@ public class Ghost extends Node {
 
     @Override
     public String toString() {
-        return getNameType() + " is at (" + getNodeX() + "," + getNodeY() + ")";
+        return getNameType() + " at (" + getNodeX() + "," + getNodeY() + ")";
     }
 }

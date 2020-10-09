@@ -4,7 +4,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -66,17 +65,16 @@
          <tooltip>
             <Tooltip text="If a ghost has direct sight of pac for 10 seconds, you die. Ghosts speed up every 10 seconds" />
          </tooltip></CheckBox>
-      <Button fx:id="advanceButton" focusTraversable="false" layoutX="30.0" layoutY="359.0" mnemonicParsing="false" onAction="#step" prefHeight="26.0" prefWidth="109.0" styleClass="button-login" text="Advance">
+      <Button fx:id="advanceButton" focusTraversable="false" layoutX="30.0" layoutY="367.0" mnemonicParsing="false" onAction="#step" prefHeight="26.0" prefWidth="109.0" styleClass="button-login" text="Advance">
          <tooltip>
             <Tooltip text="Increment game by one move" />
          </tooltip></Button>
-      <Button fx:id="randomMazeButton" focusTraversable="false" layoutX="23.0" layoutY="407.0" mnemonicParsing="false" onAction="#drawMaze" prefHeight="26.0" prefWidth="124.0" styleClass="button-login" text="Create Maze">
+      <Button fx:id="randomMazeButton" focusTraversable="false" layoutX="23.0" layoutY="416.0" mnemonicParsing="false" onAction="#drawMaze" prefHeight="26.0" prefWidth="124.0" styleClass="button-login" text="Create Maze">
          <tooltip>
             <Tooltip text="Generate a random maze for pac and his friends" />
          </tooltip></Button>
       <CheckBox fx:id="blinkyEnable" layoutX="72.0" layoutY="150.0" mnemonicParsing="false" onAction="#blinkyEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
       <CheckBox fx:id="pinkyEnable" layoutX="72.0" layoutY="220.0" mnemonicParsing="false" onAction="#pinkyEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
       <CheckBox fx:id="clydeEnable" layoutX="72.0" layoutY="296.0" mnemonicParsing="false" onAction="#clydeEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="-2.0" />
-      <TextArea layoutX="14.0" layoutY="440.0" prefHeight="44.0" prefWidth="148.0" promptText="long message long message long message" />
    </children>
 </AnchorPane>

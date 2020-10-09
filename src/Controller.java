@@ -138,7 +138,7 @@ public class Controller {
     @FXML
     private CheckBox hardModeCheck;
     @FXML
-    public static TextField gameConsole;
+    public static AnchorPane anchorParent;
 
     public boolean onlyOneGhost() {
         boolean inkyEn = inkyEnable.isSelected();
@@ -194,9 +194,6 @@ public class Controller {
 
         //used to draw walls
         startMouseUpdates();
-
-        //init game console
-        gameConsole = new TextField();
 
         //init grid
         grid = new Node[40][40];
@@ -271,6 +268,7 @@ public class Controller {
 
         //main game drawing root
         gameDrawRoot = new Pane();
+        anchorParent = new AnchorPane();
 
         //add dashed lines to our gameDrawRoot
         for (int i = 0 ; i <= 400 ; i += 10) {
@@ -1411,9 +1409,29 @@ public class Controller {
         }
     }
 
-    //todo fix this method and styling of it
+    //popup messages, can customize look based on the style sheet selected
+    private Popup createPopup(final String message) {
+        final Popup popup = new Popup();
+        popup.setAutoFix(true);
+        popup.setAutoHide(true);
+        popup.setHideOnEscape(true);
+        Label label = new Label(message);
+        label.getStylesheets().add("DefaultStyle.css");
+        label.getStyleClass().add("popup");
+        popup.getContent().add(label);
+        return popup;
+    }
+
     private void showPopupMessage(final String message, final Stage stage) {
-        gameConsole.setText(message + "\n");
+        final Popup popup = createPopup(message);
+        popup.setOnShown(e -> {
+            popup.setX(stage.getX() + 20);
+            popup.setY(stage.getY() + 460);
+        });
+        popup.show(stage);
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> popup.hide());
+        delay.play();
     }
 
     //calculate euclidean distance between coordinates

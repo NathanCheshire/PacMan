@@ -265,7 +265,7 @@ public class DijkstrasPathFinding extends PathFinder {
         }
 
         catch (Exception e) {
-            e.printStackTrace();
+            showPopupMessage("No path found from " + controlGhost + " to " + pac,Main.primaryStage);
         }
     }
 
@@ -333,7 +333,28 @@ public class DijkstrasPathFinding extends PathFinder {
         return Math.abs(x1 - x2) == 0 && Math.abs(y1 - y2) == 1;
     }
 
+    //popup messages, can customize look based on the style sheet selected
+    private Popup createPopup(final String message) {
+        final Popup popup = new Popup();
+        popup.setAutoFix(true);
+        popup.setAutoHide(true);
+        popup.setHideOnEscape(true);
+        Label label = new Label(message);
+        label.getStylesheets().add("DefaultStyle.css");
+        label.getStyleClass().add("popup");
+        popup.getContent().add(label);
+        return popup;
+    }
+
     private void showPopupMessage(final String message, final Stage stage) {
-        Controller.gameConsole.setText(message + "\n");
+        final Popup popup = createPopup(message);
+        popup.setOnShown(e -> {
+            popup.setX(stage.getX() + 20);
+            popup.setY(stage.getY() + 460);
+        });
+        popup.show(stage);
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> popup.hide());
+        delay.play();
     }
 }

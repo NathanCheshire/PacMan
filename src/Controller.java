@@ -33,7 +33,7 @@ import java.util.Stack;
 //future features I plan to add/fix-----------------------------------------------
 //todo fix ghost rendering when moving through path
 //todo if game running and draw walls off, then stop game, then use advance feature but turn on show paths, they are not shown
-//todo Make a game output area instea of notification
+//todo Make a game output area instead of notification
 //todo make all ghosts purple in hard mode
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
 //todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes

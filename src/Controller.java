@@ -33,12 +33,11 @@ import java.util.Stack;
 //future features I plan to add/fix-----------------------------------------------
 //todo fix ghost rendering when moving through path
 //todo if game running and draw walls off, then stop game, then use advance feature but turn on show paths, they are not shown
-//todo Make a game output area instead of notification
 //todo make all ghosts purple in hard mode
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
 //todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes
 //todo if they add too many walls stop the game and don't let them start again until some are removed
-//todo if they disable all ghosts end game with the message you must have at least one ghost enabled
+//todo whenever start is pressed and game starts again, remake the algorithm for the ghost
 //--------------------------------------------------------------------------------
 
 public class Controller {
@@ -738,6 +737,12 @@ public class Controller {
 
         int pacX = pac.getNodeX();
         int pacY = pac.getNodeY();
+
+        if (!inkyEnable.isSelected() && !blinkyEnable.isSelected() && !pinkyEnable.isSelected() && !clydeEnable.isSelected()) {
+            showPopupMessage("Must have at least one ghost enabled",Main.primaryStage);
+            startButton.fire();
+            return;
+        }
 
         //figure out where to put ghosts
         if (inkyEnable.isSelected() && inky == null) {

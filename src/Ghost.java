@@ -22,6 +22,8 @@ public class Ghost extends Node {
     public static final ImagePattern pinkyImage = new ImagePattern(new Image("Pinky.png"));
     public static final ImagePattern clydeImage = new ImagePattern(new Image("Clyde.png"));
 
+    public static final ImagePattern hardGhostImage = new ImagePattern(new Image("PurpleGhost.png"));
+
     private int x;
     private int y;
 
@@ -61,6 +63,27 @@ public class Ghost extends Node {
 
     public int getNodeType() {
         return this.type;
+    }
+
+    public void resetFill() {
+        switch(type) {
+            case Ghost.INKY:
+                this.setFill(inkyImage);
+                break;
+            case Ghost.BLINKY:
+                this.setFill(blinkyImage);
+                break;
+            case Ghost.PINKY:
+                this.setFill(pinkyImage);
+                break;
+            case Ghost.CLYDE:
+                this.setFill(clydeImage);
+                break;
+        }
+    }
+
+    public void setHardFill() {
+        this.setFill(hardGhostImage);
     }
 
     public void setPathFinder(PathFinder pf) {

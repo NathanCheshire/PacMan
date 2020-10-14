@@ -33,7 +33,7 @@ import java.util.Stack;
 //future features I plan to add/fix-----------------------------------------------
 //todo fix ghost rendering when moving through path
 //todo if game running and draw walls off, then stop game, then use advance feature but turn on show paths, they are not shown
-//todo make all ghosts purple in hard mode
+//todo redraw ghost colors on hardmode selection
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
 //todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes
 //todo if they add too many walls stop the game and don't let them start again until some are removed
@@ -295,7 +295,7 @@ public class Controller {
             inky = null;
         }
 
-        else {
+        else if (pac != null) {
             Random rn = new Random();
             int pacX = pac.getNodeX();
             int pacY = pac.getNodeY();
@@ -345,7 +345,7 @@ public class Controller {
             blinky = null;
         }
 
-        else {
+        else if (pac != null) {
             Random rn = new Random();
             int pacX = pac.getNodeX();
             int pacY = pac.getNodeY();
@@ -394,7 +394,7 @@ public class Controller {
             pinky = null;
         }
 
-        else {
+        else if (pac != null) {
             Random rn = new Random();
             int pacX = pac.getNodeX();
             int pacY = pac.getNodeY();
@@ -443,7 +443,7 @@ public class Controller {
             clyde = null;
         }
 
-        else {
+        else if (pac != null) {
             Random rn = new Random();
             int pacX = pac.getNodeX();
             int pacY = pac.getNodeY();
@@ -1010,6 +1010,17 @@ public class Controller {
             gameDrawRoot.getChildren().remove(grid[clyde.getNodeX()][clyde.getNodeY()]);
             grid[clyde.getNodeX()][clyde.getNodeY()].setFill(new ImagePattern(new Image("Clyde.png")));
             gameDrawRoot.getChildren().add(grid[clyde.getNodeX()][clyde.getNodeY()]);
+        }
+
+        if (hardModeEnable) {
+            if (inkyEnable.isSelected())
+                inky.setHardFill();
+            if (blinkyEnable.isSelected())
+                blinky.setHardFill();
+            if (pinkyEnable.isSelected())
+                pinky.setHardFill();
+            if (clydeEnable.isSelected())
+                clyde.setHardFill();
         }
     }
 

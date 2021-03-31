@@ -31,8 +31,11 @@ import java.util.Random;
 import java.util.Stack;
 
 //future features I plan to add/fix-----------------------------------------------
+//todo make option for showing checked nodes vs paths
+//todo fix popup issue so you don't have to dismiss
 //todo fix ghost rendering when moving through path
-//todo if game running and draw walls off, then stop game, then use advance feature but turn on show paths, they are not shown
+//todo if game running and draw walls off, then stop game, then
+// use advance feature but turn on show paths, they are not shown
 //todo redraw ghost colors on hardmode selection
 //todo don't refresh path if pac didn't move, just advance on path already there and calculated
 //todo fix pathfinding glitch where the ghost doesn't follow the path, stems from a tie between nodes
@@ -59,6 +62,7 @@ public class Controller {
     //checkbox booleans
     public static boolean hardModeEnable;
     public static boolean drawPathsEnable;
+    //todo public static boolean drawCheckedNodesEnable;
 
     //used for dragging
     private double xOffset = 0;

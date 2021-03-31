@@ -13,7 +13,7 @@
       <CheckBox fx:id="inkyEnable" layoutX="72.0" layoutY="75.0" mnemonicParsing="false" onAction="#inkyEnableHandle" style="-fx-font-weight: bold; -fx-font-family: sans-serif;" text="Enable" translateY="2.0" />
       <HBox fx:id="dragLabel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="600.0" style="-fx-background-color: rgb(26, 32, 51);" styleClass="drag-label">
          <children>
-            <Label fx:id="CloseButton" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#close_app" prefHeight="20.0" prefWidth="20.0" styleClass="close-btn" stylesheets="@../../Group-10/src/DefaultStyle.css" text="X" textFill="WHITE" translateX="580.0">
+            <Label fx:id="CloseButton" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#close_app" prefHeight="20.0" prefWidth="20.0" styleClass="close-btn" stylesheets="@DefaultStyle.css" text="X" textFill="WHITE" translateX="580.0">
                <tooltip>
                   <Tooltip text="Close" />
                </tooltip></Label>
